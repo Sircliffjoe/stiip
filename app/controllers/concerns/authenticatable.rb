@@ -1,0 +1,41 @@
+module Authenticatable
+  extend ActiveSupport::Concern
+
+  included do
+    include Pundit::Authorization
+
+    rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
+
+    # Add helper method to check premium status
+    helper_method :premium_user?
+  end
+
+  private
+
+  def require_admin!
+    authenticate_user!
+    unless current_user.admin? || current_user.analyst?
+      flash[:alert] = "Access denied."
+      redirect_to root_path
+    end
+  end
+
+  def user_not_authorized
+    flash[:alert] = "You are not authorized to perform this action."
+    redirect_to(request.referrer || root_path)
+  end
+
+  def premium_user?
+    user_signed_in? && (current_user.premium? || current_user.admin?)
+  end
+  
+  def after_sign_in_path_for(resource)
+    if resource.admin? || resource.analyst?
+      # TODO: Implement admin dashboard path
+      root_path
+    else
+      # TODO: Implement user dashboard path
+      root_path
+    end
+  end
+end

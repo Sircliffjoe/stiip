@@ -1,0 +1,13 @@
+<div class="bg-white dark:bg-slate-800 overflow-hidden shadow-sm rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-5 sm:p-6 transition-colors duration-200">
+  <dt class="truncate text-sm font-medium text-slate-500 dark:text-slate-400"><%= @title %></dt>
+  <dd class="mt-2 flex items-baseline justify-between md:block lg:flex">
+    <div class="flex items-baseline text-2xl font-bold text-slate-900 dark:text-white">
+      <%= @value %>
+    </div>
+    <% if @trend %>
+      <div class="inline-flex items-baseline px-2.5 py-0.5 rounded-full text-sm font-medium md:mt-2 lg:mt-0 <%= @trend >= 0 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' %>">
+        <%= @trend >= 0 ? '+' : '' %><%= @trend %>%
+      </div>
+    <% end %>
+  </dd>
+</div>
