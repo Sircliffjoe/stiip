@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="dark">
+<html>
   <head>
     <title><%= content_for(:title) || "STIIP — Nigerian Stock Intelligence" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -29,7 +29,7 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="font-sans antialiased bg-gray-950 text-gray-100 min-h-screen flex flex-col selection:bg-emerald-500/30 selection:text-emerald-200">
+  <body class="font-sans antialiased bg-white text-gray-900 min-h-screen flex flex-col selection:bg-purple-200 selection:text-purple-900">
     <%= render Navbar::Component.new(user: current_user) if defined?(Navbar::Component) %>
     <%= render "layouts/flash" %>
     

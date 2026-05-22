@@ -1,0 +1,44 @@
+<%= form_with model: [:admin, content], class: "space-y-5 rounded-lg border border-gray-800 bg-gray-900 p-6" do |f| %>
+  <% if content.errors.any? %>
+    <div class="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+      <%= content.errors.full_messages.to_sentence %>
+    </div>
+  <% end %>
+
+  <div>
+    <%= f.label :title, class: "block text-sm font-medium text-gray-300" %>
+    <%= f.text_field :title, class: "mt-1 w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white focus:border-emerald-500 focus:ring-emerald-500" %>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-2">
+    <div>
+      <%= f.label :category, class: "block text-sm font-medium text-gray-300" %>
+      <%= f.text_field :category, placeholder: "Basics, Dividends, Valuation", class: "mt-1 w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white focus:border-emerald-500 focus:ring-emerald-500" %>
+    </div>
+    <div>
+      <%= f.label :difficulty_level, class: "block text-sm font-medium text-gray-300" %>
+      <%= f.select :difficulty_level, EducationalContent.difficulty_levels.keys.map { |level| [level.humanize, level] }, {}, class: "mt-1 w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white focus:border-emerald-500 focus:ring-emerald-500" %>
+    </div>
+  </div>
+
+  <div>
+    <%= f.label :summary, class: "block text-sm font-medium text-gray-300" %>
+    <%= f.text_area :summary, rows: 7, class: "mt-1 w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white focus:border-emerald-500 focus:ring-emerald-500" %>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-2">
+    <div>
+      <%= f.label :published_at, class: "block text-sm font-medium text-gray-300" %>
+      <%= f.datetime_field :published_at, class: "mt-1 w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white focus:border-emerald-500 focus:ring-emerald-500" %>
+    </div>
+    <label class="mt-7 flex items-center gap-2 text-sm font-medium text-gray-300">
+      <%= f.check_box :featured, class: "rounded border-gray-700 bg-gray-950 text-emerald-600 focus:ring-emerald-500" %>
+      Featured lesson
+    </label>
+  </div>
+
+  <div class="flex gap-3">
+    <%= f.submit class: "rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500" %>
+    <%= link_to "Cancel", admin_educational_contents_path, class: "rounded-lg border border-gray-700 px-4 py-2 text-sm font-semibold text-gray-300 hover:bg-gray-800" %>
+  </div>
+<% end %>

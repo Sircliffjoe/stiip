@@ -14,7 +14,7 @@ module Authenticatable
 
   def require_admin!
     authenticate_user!
-    unless current_user.admin? || current_user.analyst?
+    unless current_user.admin_role? || current_user.analyst_role?
       flash[:alert] = "Access denied."
       redirect_to root_path
     end
@@ -26,16 +26,14 @@ module Authenticatable
   end
 
   def premium_user?
-    user_signed_in? && (current_user.premium? || current_user.admin?)
+    user_signed_in? && (current_user.premium_role? || current_user.admin_role?)
   end
   
   def after_sign_in_path_for(resource)
-    if resource.admin? || resource.analyst?
-      # TODO: Implement admin dashboard path
-      root_path
+    if resource.admin_role? || resource.analyst_role?
+      admin_dashboard_path
     else
-      # TODO: Implement user dashboard path
-      root_path
+      dashboard_path
     end
   end
 end

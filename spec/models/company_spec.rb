@@ -1,6 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe Company, type: :model do
+  subject(:company) do
+    sector = Sector.create!(name: "Financial Services")
+    described_class.new(name: "GTCO", ticker_symbol: "GTCO", sector: sector)
+  end
+
   describe 'validations' do
     it { should validate_presence_of(:name) }
     it { should validate_presence_of(:ticker_symbol) }

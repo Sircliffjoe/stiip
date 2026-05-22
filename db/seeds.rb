@@ -267,14 +267,38 @@ news = [
 ]
 
 news.each do |n|
-  NewsArticle.find_or_create_by!(title: n[:title]) do |article|
+  article = NewsArticle.find_or_create_by!(title: n[:title]) do |article|
     article.summary = n[:summary]
     article.category = n[:category]
     article.source = n[:source]
     article.featured = n[:featured]
     article.published_at = n[:published_at]
   end
+  n[:summary].scan(/\b[A-Z]{2,10}\b/).each do |ticker|
+    company = created_companies[ticker]
+    CompanyNews.find_or_create_by!(news_article: article, company: company) if company
+  end
   puts "  📄 #{n[:title][0..60]}..."
+end
+
+# ── Educational Content ─────────────────────────────────────────────────────
+puts "\n📚 Seeding educational content..."
+lessons = [
+  { title: "How Dividend Qualification Dates Work", summary: "Understand qualification dates, closure dates, and payment dates so you know when a stock must be held to receive a declared dividend.", category: "Dividends", difficulty_level: :beginner, featured: true, published_at: 1.day.ago },
+  { title: "Reading PE Ratios on Nigerian Banks", summary: "Learn how to compare price-to-earnings ratios across banks while accounting for earnings quality, provisioning, and interest-rate cycles.", category: "Valuation", difficulty_level: :intermediate, featured: true, published_at: 2.days.ago },
+  { title: "Building a Balanced NGX Watchlist", summary: "A practical approach to tracking banks, consumer names, industrials, telecoms, and dividend stocks without overloading your dashboard.", category: "Portfolio", difficulty_level: :beginner, featured: false, published_at: 3.days.ago },
+  { title: "What Market Capitalization Tells You", summary: "Use market cap to understand company size, liquidity expectations, index influence, and concentration risk in the Nigerian market.", category: "Basics", difficulty_level: :beginner, featured: false, published_at: 4.days.ago }
+]
+
+lessons.each do |lesson|
+  EducationalContent.find_or_create_by!(title: lesson[:title]) do |content|
+    content.summary = lesson[:summary]
+    content.category = lesson[:category]
+    content.difficulty_level = lesson[:difficulty_level]
+    content.featured = lesson[:featured]
+    content.published_at = lesson[:published_at]
+  end
+  puts "  📘 #{lesson[:title]}"
 end
 
 # ── Admin User ───────────────────────────────────────────────────────────────

@@ -1,21 +1,39 @@
-<h1 class="text-2xl font-bold text-slate-900 mb-6">Admin Dashboard</h1>
+<h1 class="text-2xl font-bold text-white mb-6">Admin Dashboard</h1>
 <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
-  <div class="bg-white overflow-hidden shadow rounded-lg border border-slate-200">
+  <div class="bg-gray-900 overflow-hidden shadow rounded-lg border border-gray-800">
     <div class="px-4 py-5 sm:p-6">
-      <dt class="text-sm font-medium text-slate-500 truncate">Total Users</dt>
-      <dd class="mt-1 text-3xl font-semibold text-slate-900"><%= @users_count %></dd>
+      <dt class="text-sm font-medium text-gray-400 truncate">Total Users</dt>
+      <dd class="mt-1 text-3xl font-semibold text-white"><%= @users_count %></dd>
     </div>
   </div>
-  <div class="bg-white overflow-hidden shadow rounded-lg border border-slate-200">
+  <div class="bg-gray-900 overflow-hidden shadow rounded-lg border border-gray-800">
     <div class="px-4 py-5 sm:p-6">
-      <dt class="text-sm font-medium text-slate-500 truncate">Premium Subscribers</dt>
-      <dd class="mt-1 text-3xl font-semibold text-slate-900"><%= @premium_users %></dd>
+      <dt class="text-sm font-medium text-gray-400 truncate">Premium Subscribers</dt>
+      <dd class="mt-1 text-3xl font-semibold text-white"><%= @premium_users %></dd>
     </div>
   </div>
-  <div class="bg-white overflow-hidden shadow rounded-lg border border-slate-200">
+  <div class="bg-gray-900 overflow-hidden shadow rounded-lg border border-gray-800">
     <div class="px-4 py-5 sm:p-6">
-      <dt class="text-sm font-medium text-slate-500 truncate">Listed Companies</dt>
-      <dd class="mt-1 text-3xl font-semibold text-slate-900"><%= @companies_count %></dd>
+      <dt class="text-sm font-medium text-gray-400 truncate">Listed Companies</dt>
+      <dd class="mt-1 text-3xl font-semibold text-white"><%= @companies_count %></dd>
+    </div>
+  </div>
+  <div class="bg-gray-900 overflow-hidden shadow rounded-lg border border-gray-800">
+    <div class="px-4 py-5 sm:p-6">
+      <dt class="text-sm font-medium text-gray-400 truncate">News Articles</dt>
+      <dd class="mt-1 text-3xl font-semibold text-white"><%= @news_count %></dd>
+    </div>
+  </div>
+  <div class="bg-gray-900 overflow-hidden shadow rounded-lg border border-gray-800">
+    <div class="px-4 py-5 sm:p-6">
+      <dt class="text-sm font-medium text-gray-400 truncate">Learning Modules</dt>
+      <dd class="mt-1 text-3xl font-semibold text-white"><%= @education_count %></dd>
+    </div>
+  </div>
+  <div class="bg-gray-900 overflow-hidden shadow rounded-lg border border-gray-800">
+    <div class="px-4 py-5 sm:p-6">
+      <dt class="text-sm font-medium text-gray-400 truncate">Unread Notifications</dt>
+      <dd class="mt-1 text-3xl font-semibold text-white"><%= @unread_notifications %></dd>
     </div>
   </div>
 </div>

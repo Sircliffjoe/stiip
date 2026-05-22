@@ -1,16 +1,16 @@
 class Badge::Component < ViewComponent::Base
-  def initialize(text:, color: :emerald)
+  def initialize(text:, color: :purple)
     @text = text
     @color = color
   end
 
   def color_classes
     case @color.to_sym
-    when :emerald then "bg-emerald-500/10 border border-emerald-500/20 text-emerald-400"
-    when :blue then "bg-blue-500/10 border border-blue-500/20 text-blue-400"
-    when :purple then "bg-purple-500/10 border border-purple-500/20 text-purple-400"
-    when :red then "bg-red-500/10 border border-red-500/20 text-red-400"
-    else "bg-gray-800 border border-gray-700 text-gray-300"
+    when :purple then "bg-purple-100 border border-purple-300 text-purple-700"
+    when :blue then "bg-blue-100 border border-blue-300 text-blue-700"
+    when :green then "bg-green-100 border border-green-300 text-green-700"
+    when :red then "bg-red-100 border border-red-300 text-red-700"
+    else "bg-gray-100 border border-gray-300 text-gray-700"
     end
   end
 end

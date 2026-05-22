@@ -7,8 +7,14 @@ Rails.application.routes.draw do
   resources :dividends, only: [:index]
   resources :news_articles, param: :slug, only: [:index, :show], path: 'news'
   resources :educational_contents, param: :slug, only: [:index, :show], path: 'learn'
-  resources :watchlists
-  resources :notifications, only: [:index]
+  resources :watchlists do
+    resources :watchlist_items, only: [:create, :destroy]
+  end
+  resources :notifications, only: [:index, :update] do
+    collection do
+      patch :mark_all_read
+    end
+  end
   
   namespace :admin do
     get 'dashboard', to: 'dashboard#index'
@@ -20,6 +26,16 @@ Rails.application.routes.draw do
       end
     end
     resources :dividends
+    resources :news_articles, path: "news"
+    resources :educational_contents, path: "learn"
+    resources :data_imports, only: [:index] do
+      collection do
+        post :sync_prices
+        post :sync_dividends
+        post :sync_news
+        post :import_csv
+      end
+    end
   end
   
   namespace :api do

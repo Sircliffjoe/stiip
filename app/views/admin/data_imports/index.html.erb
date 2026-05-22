@@ -1,0 +1,163 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">Data Imports</h1>
+    <p class="text-gray-600 mt-2">Manage stock data, dividends, and news imports</p>
+  </div>
+
+  <!-- Success/Error Messages -->
+  <% if notice.present? %>
+    <%= render "components/alert/alert", type: "success", message: notice %>
+  <% end %>
+  <% if alert.present? %>
+    <%= render "components/alert/alert", type: "error", message: alert %>
+  <% end %>
+
+  <!-- Import Actions -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <!-- Sync Stock Prices -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Stock Prices</h3>
+      <p class="text-sm text-gray-600 mb-4">Sync stock prices for today</p>
+      <%= form_with url: sync_prices_admin_data_imports_path, method: :post, local: true do |f| %>
+        <div class="flex gap-2 mb-3">
+          <%= f.select :provider, [["Mock", "mock"], ["CSV", "csv"], ["NGX", "ngx"], ["API", "api"]], { selected: "mock" }, class: "flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm" %>
+        </div>
+        <%= f.submit "Sync Prices", class: "w-full bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition" %>
+      <% end %>
+    </div>
+
+    <!-- Sync Dividends -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Dividends</h3>
+      <p class="text-sm text-gray-600 mb-4">Sync dividend announcements</p>
+      <%= form_with url: sync_dividends_admin_data_imports_path, method: :post, local: true do |f| %>
+        <div class="flex gap-2 mb-3">
+          <%= f.select :provider, [["Mock", "mock"], ["CSV", "csv"], ["NGX", "ngx"]], { selected: "mock" }, class: "flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm" %>
+        </div>
+        <%= f.submit "Sync Dividends", class: "w-full bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition" %>
+      <% end %>
+    </div>
+
+    <!-- Sync News -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Market News</h3>
+      <p class="text-sm text-gray-600 mb-4">Sync latest market news</p>
+      <%= form_with url: sync_news_admin_data_imports_path, method: :post, local: true do |f| %>
+        <div class="flex gap-2 mb-3">
+          <%= f.select :provider, [["Mock", "mock"], ["NGX", "ngx"], ["API", "api"]], { selected: "mock" }, class: "flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm" %>
+        </div>
+        <%= f.submit "Sync News", class: "w-full bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition" %>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- CSV Import -->
+  <div class="bg-white rounded-lg shadow p-6 mb-8">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">Bulk Import (CSV)</h3>
+    <p class="text-sm text-gray-600 mb-4">Upload a CSV file with stock price data</p>
+    <%= form_with url: import_csv_admin_data_imports_path, method: :post, local: true, multipart: true do |f| %>
+      <div class="flex gap-3 items-end">
+        <div class="flex-1">
+          <%= f.file_field :csv_file, accept: ".csv", class: "block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100" %>
+          <p class="text-xs text-gray-500 mt-1">Expected format: ticker_symbol,date,open,high,low,close,volume</p>
+        </div>
+        <%= f.submit "Import CSV", class: "bg-purple-600 text-white px-6 py-2 rounded-md hover:bg-purple-700 transition whitespace-nowrap" %>
+      </div>
+    <% end %>
+    <div class="mt-4 p-4 bg-purple-50 border border-purple-200 rounded-md">
+      <p class="text-sm text-purple-900"><strong>Sample CSV:</strong></p>
+      <pre class="text-xs text-purple-800 mt-2 overflow-x-auto"><code>ticker_symbol,date,open,high,low,close,volume
+GTCO,2026-05-20,45.50,46.25,45.00,45.80,2500000
+UBA,2026-05-20,21.40,21.85,21.00,21.60,3200000</code></pre>
+    </div>
+  </div>
+
+  <!-- Import History -->
+  <div class="bg-white rounded-lg shadow">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h3 class="text-lg font-semibold text-gray-900">Recent Imports</h3>
+    </div>
+    
+    <% if @recent_imports.any? %>
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="bg-gray-50 border-b border-gray-200">
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Type</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Provider</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Status</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Records</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">User</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Date</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% @recent_imports.each do |log| %>
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  <%= log.data_type %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded text-xs font-medium">
+                    <%= log.provider %>
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <% if log.success? %>
+                    <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-medium">✅ Success</span>
+                  <% else %>
+                    <span class="px-2 py-1 bg-red-100 text-red-800 rounded text-xs font-medium">❌ Failed</span>
+                  <% end %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  <%= log.records_imported %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  <%= log.imported_by&.email || "System" %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  <%= time_ago_in_words(log.created_at) %> ago
+                </td>
+              </tr>
+              <% if log.error_message.present? %>
+                <tr class="bg-red-50">
+                  <td colspan="6" class="px-6 py-3 text-sm text-red-800">
+                    <strong>Error:</strong> <%= log.error_message %>
+                  </td>
+                </tr>
+              <% end %>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div class="px-6 py-8 text-center">
+        <p class="text-gray-600">No imports yet. Start by syncing data above!</p>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Statistics -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+    <div class="bg-white rounded-lg shadow p-6">
+      <p class="text-gray-600 text-sm mb-2">Total Imports</p>
+      <p class="text-3xl font-bold text-gray-900"><%= DataImportLog.count %></p>
+    </div>
+    <div class="bg-white rounded-lg shadow p-6">
+      <p class="text-gray-600 text-sm mb-2">Success Rate (30 days)</p>
+      <p class="text-3xl font-bold text-green-600"><%= DataImportLog.success_rate %> %</p>
+    </div>
+    <div class="bg-white rounded-lg shadow p-6">
+      <p class="text-gray-600 text-sm mb-2">Records Imported (30 days)</p>
+      <p class="text-3xl font-bold text-purple-600"><%= DataImportLog.where("created_at > ?", 30.days.ago).sum(:records_imported) %></p>
+    </div>
+  </div>
+</div>
+
+<style>
+  pre {
+    background: white;
+    padding: 8px;
+    border-radius: 4px;
+  }
+</style>

@@ -1,0 +1,16 @@
+<div class="mx-auto max-w-3xl space-y-6">
+  <div class="flex items-start justify-between gap-4">
+    <div>
+      <%= link_to "Education CMS", admin_educational_contents_path, class: "text-sm font-medium text-emerald-300 hover:text-emerald-200" %>
+      <h1 class="mt-2 text-2xl font-bold text-white"><%= @content.title %></h1>
+      <p class="mt-2 text-sm text-gray-400"><%= @content.category %> · <%= @content.difficulty_level.humanize %></p>
+    </div>
+    <%= link_to "Edit", edit_admin_educational_content_path(@content), class: "rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500" %>
+  </div>
+
+  <div class="rounded-lg border border-gray-800 bg-gray-900 p-6">
+    <p class="leading-7 text-gray-300"><%= @content.summary %></p>
+  </div>
+
+  <%= button_to "Delete Lesson", admin_educational_content_path(@content), method: :delete, class: "rounded-lg border border-red-500/30 px-4 py-2 text-sm font-semibold text-red-300 hover:bg-red-500/10", form: { data: { turbo_confirm: "Delete this lesson?" } } %>
+</div>

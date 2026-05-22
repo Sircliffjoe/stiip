@@ -98,6 +98,23 @@ CREATE TABLE public.company_news (
 
 
 --
+-- Name: data_import_logs; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.data_import_logs (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    data_type character varying NOT NULL,
+    provider character varying NOT NULL,
+    status character varying DEFAULT 'pending'::character varying NOT NULL,
+    records_imported integer DEFAULT 0,
+    error_message text,
+    user_id uuid,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
 -- Name: data_sources; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -905,6 +922,14 @@ ALTER TABLE ONLY public.company_news
 
 
 --
+-- Name: data_import_logs data_import_logs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.data_import_logs
+    ADD CONSTRAINT data_import_logs_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: data_sources data_sources_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1129,6 +1154,20 @@ ALTER TABLE ONLY public.watchlists
 
 
 --
+-- Name: idx_data_imports_status_date; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_data_imports_status_date ON public.data_import_logs USING btree (status, created_at);
+
+
+--
+-- Name: idx_data_imports_type_date; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_data_imports_type_date ON public.data_import_logs USING btree (data_type, created_at);
+
+
+--
 -- Name: index_audit_logs_on_auditable; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1182,6 +1221,34 @@ CREATE UNIQUE INDEX index_company_news_on_company_id_and_news_article_id ON publ
 --
 
 CREATE INDEX index_company_news_on_news_article_id ON public.company_news USING btree (news_article_id);
+
+
+--
+-- Name: index_data_import_logs_on_data_type; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_data_import_logs_on_data_type ON public.data_import_logs USING btree (data_type);
+
+
+--
+-- Name: index_data_import_logs_on_provider; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_data_import_logs_on_provider ON public.data_import_logs USING btree (provider);
+
+
+--
+-- Name: index_data_import_logs_on_status; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_data_import_logs_on_status ON public.data_import_logs USING btree (status);
+
+
+--
+-- Name: index_data_import_logs_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_data_import_logs_on_user_id ON public.data_import_logs USING btree (user_id);
 
 
 --
@@ -1671,6 +1738,14 @@ ALTER TABLE ONLY public.solid_queue_blocked_executions
 
 
 --
+-- Name: data_import_logs fk_rails_678ee5717a; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.data_import_logs
+    ADD CONSTRAINT fk_rails_678ee5717a FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
 -- Name: watchlist_items fk_rails_6edd9fa838; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1765,6 +1840,7 @@ ALTER TABLE ONLY public.company_news
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260522000000'),
 ('20260521155946'),
 ('20260521143325'),
 ('20260521143324'),
