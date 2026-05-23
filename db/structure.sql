@@ -223,6 +223,39 @@ CREATE TABLE public.notifications (
 
 
 --
+-- Name: pg_search_documents; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.pg_search_documents (
+    id bigint NOT NULL,
+    content text,
+    searchable_type character varying,
+    searchable_id uuid,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: pg_search_documents_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.pg_search_documents_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: pg_search_documents_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.pg_search_documents_id_seq OWNED BY public.pg_search_documents.id;
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -799,6 +832,13 @@ CREATE TABLE public.watchlists (
 
 
 --
+-- Name: pg_search_documents id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.pg_search_documents ALTER COLUMN id SET DEFAULT nextval('public.pg_search_documents_id_seq'::regclass);
+
+
+--
 -- Name: solid_cable_messages id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -975,6 +1015,14 @@ ALTER TABLE ONLY public.news_articles
 
 ALTER TABLE ONLY public.notifications
     ADD CONSTRAINT notifications_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pg_search_documents pg_search_documents_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.pg_search_documents
+    ADD CONSTRAINT pg_search_documents_pkey PRIMARY KEY (id);
 
 
 --
@@ -1312,6 +1360,13 @@ CREATE INDEX index_notifications_on_notifiable ON public.notifications USING btr
 --
 
 CREATE INDEX index_notifications_on_user_id ON public.notifications USING btree (user_id);
+
+
+--
+-- Name: index_pg_search_documents_on_searchable; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_pg_search_documents_on_searchable ON public.pg_search_documents USING btree (searchable_type, searchable_id);
 
 
 --
@@ -1840,6 +1895,7 @@ ALTER TABLE ONLY public.company_news
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260523211452'),
 ('20260522000000'),
 ('20260521155946'),
 ('20260521143325'),

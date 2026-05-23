@@ -1,6 +1,54 @@
 name: CI
 
 on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.3.10
+          bundler-cache: true
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update -y
+          gem install bundler
+          bundle install --jobs 4 --retry 3
+
+      - name: Prepare database
+        env:
+          RAILS_ENV: test
+          DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/postgres
+        run: |
+          bin/rails db:create db:migrate
+
+      - name: Run specs
+        env:
+          RAILS_ENV: test
+        run: |
+          bundle exec rspec --format documentation
+name: CI
+
+on:
   pull_request:
   push:
     branches: [ main ]

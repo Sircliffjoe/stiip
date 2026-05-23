@@ -19,4 +19,8 @@ class User < ApplicationRecord
   def full_name
     "#{first_name} #{last_name}"
   end
+
+  def premium?
+    premium_role? || analyst_role? || admin_role?
+  end
 end

@@ -14,6 +14,7 @@
         <a href="/dividends" class="text-gray-600 hover:text-purple-600 transition-colors duration-200">Dividends</a>
         <a href="/news" class="text-gray-600 hover:text-purple-600 transition-colors duration-200">News</a>
         <a href="/learn" class="text-gray-600 hover:text-purple-600 transition-colors duration-200">Learn</a>
+        <a href="/pricing" class="text-gray-600 hover:text-purple-600 transition-colors duration-200">Pricing</a>
       </div>
       
       <div class="flex items-center gap-4">
@@ -22,21 +23,30 @@
         </div>
         
         <% if @user %>
-          <div class="relative" data-controller="dropdown">
-            <button data-action="dropdown#toggle" class="flex items-center gap-2 p-1 rounded-full hover:bg-gray-100 transition border border-transparent hover:border-gray-300">
-              <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-purple-800 text-white flex items-center justify-center font-bold shadow-inner">
-                <%= @user.first_name[0] %>
+          <details class="group relative">
+            <summary class="flex cursor-pointer list-none items-center gap-2 rounded-full border border-transparent p-1 pr-2 transition hover:border-gray-300 hover:bg-gray-100 [&::-webkit-details-marker]:hidden" aria-haspopup="menu">
+              <div class="w-8 h-8 rounded-full bg-gradient-to-br from-pink-400 to-fuchsia-500 text-white flex items-center justify-center font-bold shadow-inner">
+                <%= @user.first_name.to_s.first&.upcase || "U" %>
               </div>
-            </button>
-            <div data-dropdown-target="menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-200 py-1 focus:outline-none">
+              <span class="hidden text-sm font-medium text-gray-700 lg:inline"><%= @user.first_name %></span>
+            </summary>
+            <div class="absolute right-0 z-50 mt-2 w-64 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl focus:outline-none" role="menu">
+              <div class="border-b border-gray-100 px-4 py-3">
+                <p class="text-sm font-semibold text-gray-900"><%= @user.full_name %></p>
+                <p class="mt-0.5 truncate text-xs text-gray-500"><%= @user.email %></p>
+              </div>
+              <a href="/profile" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600">Profile</a>
               <a href="/dashboard" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600">Dashboard</a>
+              <% if @user.admin_role? || @user.analyst_role? %>
+                <a href="/admin/dashboard" class="block px-4 py-2.5 text-sm font-medium text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800">Admin Dashboard</a>
+              <% end %>
               <a href="/watchlists" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600">Watchlists</a>
               <a href="/notifications" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600">Notifications</a>
-              <a href="/profile" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600">Settings</a>
+              <a href="/settings" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600">Settings</a>
               <div class="border-t border-gray-200 my-1"></div>
               <%= button_to "Sign out", "/users/sign_out", method: :delete, class: "block w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50" %>
             </div>
-          </div>
+          </details>
         <% else %>
           <a href="/users/sign_in" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Log in</a>
           <a href="/users/sign_up" class="text-sm font-semibold bg-gradient-to-r from-purple-600 to-purple-700 text-white px-4 py-2 rounded-lg shadow-md shadow-purple-600/20 hover:shadow-lg hover:shadow-purple-600/30 hover:-translate-y-0.5 transition-all">Sign up</a>

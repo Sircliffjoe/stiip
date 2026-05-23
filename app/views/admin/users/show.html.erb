@@ -1,0 +1,48 @@
+<div class="max-w-4xl mx-auto">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold text-white">User Details</h1>
+    <div class="flex gap-2">
+      <%= link_to "Back to Directory", admin_users_path, class: "bg-gray-800 border border-gray-700 text-gray-300 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-700 transition" %>
+    </div>
+  </div>
+
+  <div class="bg-gray-900 border border-gray-800 shadow rounded-lg overflow-hidden">
+    <div class="px-4 py-5 sm:px-6 flex justify-between items-center border-b border-gray-800">
+      <div>
+        <h3 class="text-lg leading-6 font-medium text-white">
+          <%= @user.email %>
+        </h3>
+        <p class="mt-1 max-w-2xl text-sm text-gray-400">
+          Personal details and account status.
+        </p>
+      </div>
+      <span class="px-3 py-1 rounded-full bg-blue-900/30 text-blue-400 border border-blue-800 text-sm font-medium">
+        User
+      </span>
+    </div>
+    <div class="border-t border-gray-800 px-4 py-5 sm:p-0">
+      <dl class="sm:divide-y sm:divide-gray-800">
+        <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-400">Email Address</dt>
+          <dd class="mt-1 text-sm text-white sm:mt-0 sm:col-span-2"><%= @user.email %></dd>
+        </div>
+        <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-400">Joined on</dt>
+          <dd class="mt-1 text-sm text-white sm:mt-0 sm:col-span-2"><%= @user.created_at.strftime("%B %d, %Y at %I:%M %p") %></dd>
+        </div>
+        <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-400">Last Sign In</dt>
+          <dd class="mt-1 text-sm text-white sm:mt-0 sm:col-span-2">
+            <%= @user.respond_to?(:last_sign_in_at) && @user.last_sign_in_at ? @user.last_sign_in_at.strftime("%B %d, %Y at %I:%M %p") : "Never" %>
+          </dd>
+        </div>
+        <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-400">Sign In Count</dt>
+          <dd class="mt-1 text-sm text-white sm:mt-0 sm:col-span-2">
+            <%= @user.respond_to?(:sign_in_count) ? @user.sign_in_count : "N/A" %>
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+</div>

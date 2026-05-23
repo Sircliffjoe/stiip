@@ -191,13 +191,14 @@ module DataIngestion
           
           dividend = Dividend.find_or_initialize_by(
             company_id: company.id,
-            qualification_date: div_data[:qualification_date],
-            amount: div_data[:amount]
+            year: div_data[:year],
+            interim: div_data[:interim] || false
           )
           
           dividend.update!(
+            qualification_date: div_data[:qualification_date],
+            amount: div_data[:amount],
             payment_date: div_data[:payment_date],
-            year: div_data[:year],
             status: :announced
           )
           

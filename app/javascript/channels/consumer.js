@@ -1,2 +1,2 @@
-import { createConsumer } from "@hotwired/turbo-rails"
+import { createConsumer } from "@rails/actioncable"
 export default createConsumer()

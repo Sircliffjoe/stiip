@@ -15,11 +15,19 @@ Rails.application.routes.draw do
       patch :mark_all_read
     end
   end
-  
+
+  # Pricing & Subscriptions
+  resources :pricing, only: [:index] do
+    collection do
+      post :checkout
+    end
+  end
+
   namespace :admin do
     get 'dashboard', to: 'dashboard#index'
     resources :users
     resources :companies
+    resources :subscriptions
     resources :stock_prices do
       collection do
         post :import
@@ -42,16 +50,23 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :companies, only: [:index, :show] do
         resources :prices, only: [:index]
+        resources :dividends, only: [:index]
       end
+      resources :dividends, only: [:index]
+      resources :news, only: [:index, :show], controller: 'news'
+      get :search, to: 'search#index'
     end
   end
   
   namespace :webhooks do
     post 'subscriptions', to: 'subscriptions#create'
+    post 'paystack', to: 'paystack#create'
   end
 
-  get '/profile', to: 'profiles#edit'
+  get '/profile', to: 'profiles#show'
+  get '/settings', to: 'profiles#edit'
   get '/search', to: 'search#index'
+  get '/pricing', to: 'pricing#index'
   get '/market', to: 'market#index'
   get '/dashboard', to: 'dashboard#index'
 

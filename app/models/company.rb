@@ -1,4 +1,9 @@
 class Company < ApplicationRecord
+  include PgSearch::Model
+  multisearchable against: [:name, :ticker_symbol, :description]
+  pg_search_scope :search_by_term, against: [:name, :ticker_symbol, :description],
+                  using: { tsearch: { prefix: true, dictionary: "english" } }
+
   belongs_to :sector
   has_many :stock_prices, dependent: :destroy
   has_many :dividends, dependent: :destroy

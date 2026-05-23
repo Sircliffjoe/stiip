@@ -1,0 +1,12 @@
+<div class="max-w-3xl mx-auto">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold text-white">Add New Dividend</h1>
+    <%= link_to "Back to Directory", admin_dividends_path, class: "text-purple-600 hover:text-purple-700 font-medium text-sm" %>
+  </div>
+
+  <div class="bg-gray-900 border border-gray-800 shadow overflow-hidden sm:rounded-lg border border-gray-800">
+    <div class="px-4 py-5 sm:p-6">
+      <%= render "form", dividend: @dividend %>
+    </div>
+  </div>
+</div>

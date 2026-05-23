@@ -1,4 +1,9 @@
 class EducationalContent < ApplicationRecord
+  include PgSearch::Model
+  multisearchable against: [:title, :body, :excerpt],
+                  if: :published?
+  pg_search_scope :search_by_term, against: [:title, :body, :excerpt],
+                  using: { tsearch: { prefix: true, dictionary: "english" } }
   belongs_to :author, class_name: 'User', optional: true
   has_many :taggings, as: :taggable, dependent: :destroy
   has_many :tags, through: :taggings

@@ -1,0 +1,112 @@
+<%= form_with(model: [:admin, company], local: true, class: "space-y-6") do |f| %>
+  <% if company.errors.any? %>
+    <div class="bg-red-50 p-4 rounded-md mb-6">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-red-800"><%= pluralize(company.errors.count, "error") %> prohibited this company from being saved:</h3>
+          <div class="mt-2 text-sm text-red-700">
+            <ul class="list-disc pl-5 space-y-1">
+              <% company.errors.full_messages.each do |msg| %>
+                <li><%= msg %></li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
+    <div class="sm:col-span-2">
+      <%= f.label :name, class: "block text-sm font-medium text-gray-300" %>
+      <div class="mt-1">
+        <%= f.text_field :name, class: "shadow-sm focus:ring-purple-500 focus:border-purple-500 block w-full sm:text-sm border-gray-700 rounded-md bg-gray-800 text-white placeholder-gray-500" %>
+      </div>
+    </div>
+
+    <div>
+      <%= f.label :ticker_symbol, class: "block text-sm font-medium text-gray-300" %>
+      <div class="mt-1">
+        <%= f.text_field :ticker_symbol, class: "shadow-sm focus:ring-purple-500 focus:border-purple-500 block w-full sm:text-sm border-gray-700 rounded-md bg-gray-800 text-white placeholder-gray-500 uppercase" %>
+      </div>
+    </div>
+
+    <div>
+      <%= f.label :sector_id, "Sector", class: "block text-sm font-medium text-gray-300" %>
+      <div class="mt-1">
+        <%= f.collection_select :sector_id, @sectors, :id, :name, { prompt: "Select a Sector" }, class: "shadow-sm focus:ring-purple-500 focus:border-purple-500 block w-full sm:text-sm border-gray-700 rounded-md bg-gray-800 text-white placeholder-gray-500" %>
+      </div>
+    </div>
+
+    <div class="sm:col-span-2">
+      <%= f.label :description, class: "block text-sm font-medium text-gray-300" %>
+      <div class="mt-1">
+        <%= f.text_area :description, rows: 4, class: "shadow-sm focus:ring-purple-500 focus:border-purple-500 block w-full sm:text-sm border border-gray-700 rounded-md" %>
+      </div>
+    </div>
+
+    <div>
+      <%= f.label :market_cap, class: "block text-sm font-medium text-gray-300" %>
+      <div class="mt-1">
+        <%= f.number_field :market_cap, class: "shadow-sm focus:ring-purple-500 focus:border-purple-500 block w-full sm:text-sm border-gray-700 rounded-md bg-gray-800 text-white placeholder-gray-500" %>
+      </div>
+    </div>
+
+    <div>
+      <%= f.label :pe_ratio, "P/E Ratio", class: "block text-sm font-medium text-gray-300" %>
+      <div class="mt-1">
+        <%= f.number_field :pe_ratio, step: "0.01", class: "shadow-sm focus:ring-purple-500 focus:border-purple-500 block w-full sm:text-sm border-gray-700 rounded-md bg-gray-800 text-white placeholder-gray-500" %>
+      </div>
+    </div>
+
+    <div>
+      <%= f.label :current_price, class: "block text-sm font-medium text-gray-300" %>
+      <div class="mt-1">
+        <%= f.number_field :current_price, step: "0.01", class: "shadow-sm focus:ring-purple-500 focus:border-purple-500 block w-full sm:text-sm border-gray-700 rounded-md bg-gray-800 text-white placeholder-gray-500" %>
+      </div>
+    </div>
+
+    <div>
+      <%= f.label :dividend_yield, "Dividend Yield (%)", class: "block text-sm font-medium text-gray-300" %>
+      <div class="mt-1">
+        <%= f.number_field :dividend_yield, step: "0.01", class: "shadow-sm focus:ring-purple-500 focus:border-purple-500 block w-full sm:text-sm border-gray-700 rounded-md bg-gray-800 text-white placeholder-gray-500" %>
+      </div>
+    </div>
+    
+    <div>
+      <%= f.label :website, class: "block text-sm font-medium text-gray-300" %>
+      <div class="mt-1">
+        <%= f.url_field :website, class: "shadow-sm focus:ring-purple-500 focus:border-purple-500 block w-full sm:text-sm border-gray-700 rounded-md bg-gray-800 text-white placeholder-gray-500" %>
+      </div>
+    </div>
+
+    <div>
+      <%= f.label :founded_year, class: "block text-sm font-medium text-gray-300" %>
+      <div class="mt-1">
+        <%= f.number_field :founded_year, class: "shadow-sm focus:ring-purple-500 focus:border-purple-500 block w-full sm:text-sm border-gray-700 rounded-md bg-gray-800 text-white placeholder-gray-500" %>
+      </div>
+    </div>
+
+    <div class="sm:col-span-2">
+      <div class="flex items-start">
+        <div class="h-5 flex items-center">
+          <%= f.check_box :listed, class: "focus:ring-purple-500 h-4 w-4 text-purple-600 border-gray-700 rounded" %>
+        </div>
+        <div class="ml-3 text-sm">
+          <%= f.label :listed, "Currently Listed on NGX", class: "font-medium text-gray-300" %>
+          <p class="text-gray-400">Uncheck if the company is delisted.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pt-5 flex justify-end">
+    <%= link_to "Cancel", admin_companies_path, class: "bg-gray-900 border border-gray-800 py-2 px-4 border border-gray-700 rounded-md shadow-sm text-sm font-medium text-gray-300 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition" %>
+    <%= f.submit class: "ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 cursor-pointer transition" %>
+  </div>
+<% end %>

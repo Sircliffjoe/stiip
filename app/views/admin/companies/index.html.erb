@@ -1,4 +1,57 @@
-<h1 class="text-2xl font-bold text-slate-900 mb-6">Companies Directory</h1>
-<div class="bg-white shadow overflow-hidden sm:rounded-lg border border-slate-200 p-8 text-center text-slate-500">
-  Companies management table will render here.
+<div class="flex justify-between items-center mb-6">
+  <h1 class="text-2xl font-bold text-white">Companies Directory</h1>
+  <%= link_to "Add Company", new_admin_company_path, class: "bg-purple-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-purple-700 transition" %>
+</div>
+
+<div class="bg-gray-900 border border-gray-800 shadow overflow-hidden sm:rounded-lg border border-gray-800">
+  <table class="min-w-full divide-y divide-gray-800">
+    <thead class="bg-gray-800">
+      <tr>
+        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Company</th>
+        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Sector</th>
+        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Price</th>
+        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Market Cap</th>
+        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="bg-gray-900 border border-gray-800 divide-y divide-gray-800">
+      <% @companies.each do |company| %>
+        <tr>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="flex items-center">
+              <div class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-md bg-purple-900/30 text-purple-400 border border-purple-800 font-bold">
+                <%= company.ticker_symbol.first(2) %>
+              </div>
+              <div class="ml-4">
+                <div class="text-sm font-medium text-white"><%= company.name %></div>
+                <div class="text-sm text-gray-400"><%= company.ticker_symbol %></div>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+            <%= company.sector&.name || "N/A" %>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-white font-medium">
+            <%= number_to_currency(company.latest_price, unit: "₦") || "N/A" %>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+            <%= number_to_human(company.market_cap, units: { billion: "B", million: "M" }, format: "%n%u") || "N/A" %>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+            <%= link_to "View", admin_company_path(company), class: "text-blue-400 hover:text-blue-300 mr-3" %>
+            <%= link_to "Edit", edit_admin_company_path(company), class: "text-purple-600 hover:text-purple-300 mr-3" %>
+            <%= button_to "Delete", admin_company_path(company), method: :delete, class: "text-red-600 hover:text-red-900 inline-block", data: { turbo_confirm: "Are you sure?" } %>
+          </td>
+        </tr>
+      <% end %>
+      
+      <% if @companies.empty? %>
+        <tr>
+          <td colspan="5" class="px-6 py-8 text-center text-gray-400">
+            No companies found. <%= link_to "Add one now", new_admin_company_path, class: "text-purple-600 hover:underline" %>.
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
 </div>

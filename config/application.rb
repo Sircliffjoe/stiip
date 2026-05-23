@@ -43,6 +43,9 @@ module Stiip
       g.system_tests = nil
     end
 
+    # Use Rack::Attack
+    config.middleware.use Rack::Attack
+
     # Use SQL schema format
     config.active_record.schema_format = :sql
   end
