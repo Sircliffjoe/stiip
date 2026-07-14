@@ -1,5 +1,7 @@
 module DataIngestion
   class DataNormalizer
+    require "cgi"
+
     # Validates and normalizes data from any provider before database persistence
     # Ensures consistency, handles missing values, and applies business logic
     
@@ -22,7 +24,13 @@ module DataIngestion
         high: validate_price(data[:high]) || close,
         low: validate_price(data[:low]) || close,
         close: close,
-        volume: validate_volume(data[:volume])
+        volume: validate_volume(data[:volume]),
+        change_percent: validate_decimal(data[:change_percent]),
+        market_cap: validate_decimal(data[:market_cap]),
+        shares_outstanding: validate_volume(data[:shares_outstanding]),
+        pe_ratio: validate_decimal(data[:pe_ratio]),
+        high_52_week: validate_price(data[:high_52_week]),
+        low_52_week: validate_price(data[:low_52_week])
       }.tap { |normalized| validate_price_consistency(normalized) }
     end
 
@@ -40,7 +48,9 @@ module DataIngestion
         amount: validate_dividend_amount(data[:amount]),
         qualification_date: validate_date(data[:qualification_date]),
         payment_date: validate_date(data[:payment_date]),
-        year: validate_year(data[:year])
+        year: validate_year(data[:year]),
+        interim: ActiveModel::Type::Boolean.new.cast(data[:interim]),
+        currency: validate_currency(data[:currency])
       }
     end
 
@@ -157,6 +167,14 @@ module DataIngestion
       raise ValidationError, "Invalid volume: #{value}"
     end
 
+    def validate_decimal(value)
+      return nil if value.blank?
+
+      BigDecimal(value.to_s).round(2)
+    rescue ArgumentError, TypeError
+      raise ValidationError, "Invalid decimal: #{value}"
+    end
+
     def validate_year(value)
       return Date.today.year if value.blank?
       
@@ -168,6 +186,12 @@ module DataIngestion
       raise ValidationError, "Invalid year: #{value}"
     end
 
+    def validate_currency(value)
+      currency = value.to_s.strip.upcase.presence || "NGN"
+      raise ValidationError, "Currency must be a 3-letter code" unless currency.match?(/\A[A-Z]{3}\z/)
+      currency
+    end
+
     def validate_title(value)
       raise ValidationError, "Title is required" if value.blank?
       title = value.to_s.strip
@@ -176,14 +200,23 @@ module DataIngestion
     end
 
     def validate_content(value)
-      content = value.to_s.strip
+      content = clean_text(value)
       raise ValidationError, "Content must be less than 50,000 characters" if content.length > 50_000
       content
     end
 
     def validate_source(value)
-      source = value.to_s.strip.presence || "Unknown"
+      source = clean_text(value).presence || "Unknown"
       source[0...100] # Limit to 100 chars
+    end
+
+    def clean_text(value)
+      decoded = CGI.unescapeHTML(value.to_s)
+      without_tags = decoded.gsub(/<[^>]*>/, " ")
+      without_tags
+        .gsub(/\u00a0/, " ")
+        .gsub(/[[:space:]]+/, " ")
+        .strip
     end
 
     def validate_url(value)

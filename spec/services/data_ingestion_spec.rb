@@ -37,6 +37,50 @@ RSpec.describe DataIngestion::SyncCoordinator, type: :service do
     end
   end
 
+  describe "#sync_companies" do
+    it "creates sectors and companies from provider snapshots" do
+      provider = Class.new(DataIngestion::Providers::BaseProvider) do
+        def fetch_companies
+          [
+            {
+              ticker_symbol: "MTNN",
+              name: "MTN NIGERIA COMMUNICATIONS PLC",
+              sector: "ICT",
+              current_price: "820.00",
+              shares_outstanding: "20995560103",
+              market_cap: "17216359284460.00",
+              listed: true
+            }
+          ]
+        end
+      end.new
+      coordinator = described_class.new(provider: provider)
+
+      result = coordinator.sync_companies
+
+      expect(result[:success]).to be true
+      expect(Company.find_by!(ticker_symbol: "MTNN").sector.name).to eq("ICT")
+      expect(Company.find_by!(ticker_symbol: "MTNN").current_price).to eq(820)
+    end
+
+    it "uses sector slugs as identity when API casing changes" do
+      Sector.create!(name: "ICT")
+      provider = Class.new(DataIngestion::Providers::BaseProvider) do
+        def fetch_companies
+          [
+            { ticker_symbol: "AIRTELAFRI", name: "AIRTEL AFRICA PLC", sector: "Ict", current_price: "2500.00" }
+          ]
+        end
+      end.new
+      coordinator = described_class.new(provider: provider)
+
+      result = coordinator.sync_companies
+
+      expect(result[:success]).to be true
+      expect(Sector.where(slug: "ict").count).to eq(1)
+    end
+  end
+
   describe "#sync_dividends" do
     it "successfully syncs dividends" do
       result = coordinator.sync_dividends
@@ -157,13 +201,17 @@ RSpec.describe DataIngestion::DataNormalizer, type: :service do
         amount: 2.5,
         qualification_date: Date.current,
         payment_date: 30.days.from_now,
-        year: 2026
+        year: 2026,
+        interim: true,
+        currency: "ngn"
       }
 
       result = normalizer.normalize_dividend(data)
 
       expect(result[:ticker_symbol]).to eq("GTCO")
       expect(result[:amount]).to eq(2.5)
+      expect(result[:interim]).to be true
+      expect(result[:currency]).to eq("NGN")
     end
 
     it "validates dividend amount" do
@@ -238,6 +286,200 @@ RSpec.describe DataIngestion::Providers::CsvProvider, type: :service do
       expect {
         bad_provider.fetch_end_of_day_prices
       }.to raise_error(ArgumentError, /File not found/)
+    end
+  end
+end
+
+RSpec.describe DataIngestion::Providers::NgxProvider, type: :service do
+  let(:provider) { described_class.new(api_key: "test-key") }
+
+  describe "#fetch_end_of_day_prices" do
+    it "normalizes NGX Pulse stock snapshots" do
+      allow(provider).to receive(:get_json).with("/api/ngxdata/stocks").and_return([
+        {
+          "symbol" => "GTCO",
+          "current_price" => 72.5,
+          "change_percent" => 1.25,
+          "volume" => 1_200_000,
+          "market_cap" => 2_100_000_000_000,
+          "shares_outstanding" => 29_400_000_000,
+          "pe_ratio" => 5.8
+        }
+      ])
+
+      result = provider.fetch_end_of_day_prices(date: Date.current)
+
+      expect(result.first).to include(
+        ticker_symbol: "GTCO",
+        close: 72.5,
+        volume: 1_200_000,
+        change_percent: 1.25,
+        market_cap: 2_100_000_000_000,
+        shares_outstanding: 29_400_000_000,
+        pe_ratio: 5.8
+      )
+    end
+
+    it "handles the live NGX Pulse stocks wrapper" do
+      allow(provider).to receive(:get_json).with("/api/ngxdata/stocks").and_return(
+        "stocks" => [
+          { "symbol" => "GTCO", "current_price" => 72.5, "volume" => 1_200_000 }
+        ]
+      )
+
+      result = provider.fetch_end_of_day_prices(date: Date.current)
+
+      expect(result.first[:ticker_symbol]).to eq("GTCO")
+      expect(result.first[:close]).to eq(72.5)
+    end
+  end
+
+  describe "#fetch_stock_price" do
+    it "fetches a single ticker quote" do
+      allow(provider).to receive(:get_json).with("/api/ngxdata/prices/GTCO").and_return(
+        "symbol" => "GTCO",
+        "prices" => [
+          { "trade_date" => "2026-05-20", "open_price" => 71.0, "close_price" => 71.5, "volume" => 800_000 },
+          { "trade_date" => "2026-05-21", "open_price" => 72.0, "close_price" => 72.5, "volume" => 1_200_000 }
+        ]
+      )
+
+      result = provider.fetch_stock_price("gtco", date: Date.current)
+
+      expect(result[:ticker_symbol]).to eq("GTCO")
+      expect(result[:close]).to eq(72.5)
+      expect(result[:date]).to eq(Date.new(2026, 5, 21))
+    end
+  end
+end
+
+RSpec.describe DataIngestion::Providers::NgnMarketProvider, type: :service do
+  let(:provider) { described_class.new(api_key: "test-key") }
+
+  describe "#fetch_end_of_day_prices" do
+    it "normalizes NGN Market company snapshots" do
+      allow(provider).to receive(:get_json).with("/companies", page: 1, limit: 100).and_return(
+        "data" => {
+          "data" => [
+            {
+              "symbol" => "GTCO",
+              "price" => "94.0000",
+              "prev_close" => "93.0000",
+              "volume" => "9751869",
+              "market_cap" => "2766000000000.00",
+              "shares_outstanding" => "29400000000",
+              "price_change_percent" => "1.0753",
+              "high_52wk" => "94.0000",
+              "low_52wk" => "39.5000",
+              "last_updated" => "2026-05-28T15:40:03.000Z"
+            }
+          ],
+          "pagination" => { "page" => 1, "pages" => 1 }
+        }
+      )
+
+      result = provider.fetch_end_of_day_prices(date: Date.current)
+
+      expect(result.first).to include(
+        ticker_symbol: "GTCO",
+        close: "94.0000",
+        open: "93.0000",
+        volume: "9751869",
+        market_cap: "2766000000000.00",
+        shares_outstanding: "29400000000",
+        change_percent: "1.0753",
+        high_52_week: "94.0000",
+        low_52_week: "39.5000",
+        source: "NGN Market"
+      )
+    end
+  end
+
+  describe "#fetch_stock_price" do
+    it "finds a ticker from the market snapshot" do
+      allow(provider).to receive(:get_json).with("/companies", page: 1, limit: 100).and_return(
+        "data" => {
+          "data" => [
+            { "symbol" => "UBA", "price" => "45.0000", "last_updated" => "2026-05-28T15:40:03.000Z" }
+          ],
+          "pagination" => { "page" => 1, "pages" => 1 }
+        }
+      )
+
+      result = provider.fetch_stock_price("uba", date: Date.current)
+
+      expect(result[:ticker_symbol]).to eq("UBA")
+      expect(result[:close]).to eq("45.0000")
+    end
+  end
+end
+
+RSpec.describe DataIngestion::Providers::CompositeMarketProvider, type: :service do
+  describe "#fetch_end_of_day_prices" do
+    it "keeps the freshest row per ticker across providers" do
+      older_provider = instance_double(
+        DataIngestion::Providers::BaseProvider,
+        fetch_end_of_day_prices: [
+          { ticker_symbol: "GTCO", close: 90, date: Date.new(2026, 5, 27), source_time: Time.zone.parse("2026-05-27 15:00") }
+        ]
+      )
+      newer_provider = instance_double(
+        DataIngestion::Providers::BaseProvider,
+        fetch_end_of_day_prices: [
+          { ticker_symbol: "GTCO", close: 94, date: Date.new(2026, 5, 28), source_time: Time.zone.parse("2026-05-28 15:00") }
+        ]
+      )
+      provider = described_class.new(providers: [older_provider, newer_provider])
+
+      result = provider.fetch_end_of_day_prices(date: Date.current)
+
+      expect(result.length).to eq(1)
+      expect(result.first[:close]).to eq(94)
+    end
+  end
+end
+
+RSpec.describe DataIngestion::Providers::EodhdProvider, type: :service do
+  let(:provider) { described_class.new(api_key: "test-key") }
+
+  describe "#fetch_dividends" do
+    it "normalizes Nigerian dividend history from EODHD" do
+      sector = Sector.create!(name: "Financial Services")
+      Company.create!(name: "GTCO PLC", ticker_symbol: "GTCO", sector: sector)
+
+      allow(provider).to receive(:get_json).with(
+        "/div/GTCO.XNSA",
+        from: "2020-01-01",
+        to: "2026-12-31"
+      ).and_return([
+        {
+          "date" => "2026-03-24",
+          "recordDate" => "2026-03-25",
+          "paymentDate" => "2026-04-15",
+          "value" => 4.0,
+          "unadjustedValue" => 4.0,
+          "currency" => "NGN"
+        },
+        {
+          "date" => "2026-09-24",
+          "value" => 1.0,
+          "currency" => "NGN"
+        }
+      ])
+
+      result = provider.fetch_dividends(start_date: Date.new(2020, 1, 1), end_date: Date.new(2026, 12, 31))
+
+      expect(result.length).to eq(2)
+      expect(result.first).to include(
+        ticker_symbol: "GTCO",
+        amount: 4.0,
+        qualification_date: Date.new(2026, 3, 25),
+        payment_date: Date.new(2026, 4, 15),
+        year: 2026,
+        interim: false,
+        currency: "NGN"
+      )
+      expect(result.second[:interim]).to be true
     end
   end
 end

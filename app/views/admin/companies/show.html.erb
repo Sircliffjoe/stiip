@@ -1,7 +1,7 @@
 <div class="max-w-5xl mx-auto">
   <div class="flex justify-between items-center mb-6">
     <div class="flex items-center gap-4">
-      <div class="flex-shrink-0 h-12 w-12 flex items-center justify-center rounded-md bg-purple-900/50 text-purple-400 border border-purple-800 font-bold text-lg">
+      <div class="flex-shrink-0 h-12 w-12 flex items-center justify-center rounded-md bg-navy-900/50 text-navy-400 border border-navy-800 font-bold text-lg">
         <%= @company.ticker_symbol.first(2) %>
       </div>
       <div>
@@ -10,7 +10,7 @@
       </div>
     </div>
     <div class="flex gap-2">
-      <%= link_to "Edit", edit_admin_company_path(@company), class: "bg-purple-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-purple-700 transition" %>
+      <%= link_to "Edit", edit_admin_company_path(@company), class: "bg-navy-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-navy-700 transition" %>
       <%= link_to "Back", admin_companies_path, class: "bg-gray-800 border border-gray-700 text-gray-300 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-700 transition" %>
     </div>
   </div>
@@ -25,7 +25,7 @@
       <div class="bg-gray-900 border border-gray-800 shadow rounded-lg overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-800 flex justify-between items-center">
           <h3 class="text-lg font-medium text-white">Recent Dividends</h3>
-          <%= link_to "View All", admin_dividends_path, class: "text-purple-400 hover:text-purple-300 text-sm" %>
+          <%= link_to "View All", admin_dividends_path, class: "text-navy-400 hover:text-navy-300 text-sm" %>
         </div>
         <% if @company.dividends.any? %>
           <table class="min-w-full divide-y divide-gray-800">
@@ -94,7 +94,7 @@
           </div>
           <div class="flex flex-col pt-3 border-t border-gray-800">
             <dt class="text-gray-500 mb-1">Website</dt>
-            <dd class="text-purple-400 truncate">
+            <dd class="text-navy-400 truncate">
               <% if @company.website.present? && safe_external_url(@company.website) %>
                 <%= link_to @company.website, safe_external_url(@company.website), target: "_blank", class: "hover:underline" %>
               <% else %>

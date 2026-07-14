@@ -20,9 +20,9 @@
       <p class="text-sm text-gray-400 mb-4">Sync stock prices for today</p>
       <%= form_with url: sync_prices_admin_data_imports_path, method: :post, local: true do |f| %>
         <div class="flex gap-2 mb-3">
-          <%= f.select :provider, [["Mock", "mock"], ["CSV", "csv"], ["NGX", "ngx"], ["API", "api"]], { selected: "mock" }, class: "flex-1 px-3 py-2 border border-gray-700 rounded-md text-sm bg-gray-800 text-white" %>
+          <%= f.select :provider, [["Market Composite", "market"], ["NGN Market", "ngn_market"], ["NGX Pulse", "ngx"], ["CSV", "csv"]], { selected: "market" }, class: "flex-1 px-3 py-2 border border-gray-700 rounded-md text-sm bg-gray-800 text-white" %>
         </div>
-        <%= f.submit "Sync Prices", class: "w-full bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition" %>
+        <%= f.submit "Sync Prices", class: "w-full bg-navy-600 text-white px-4 py-2 rounded-md hover:bg-navy-700 transition" %>
       <% end %>
     </div>
 
@@ -32,9 +32,9 @@
       <p class="text-sm text-gray-400 mb-4">Sync dividend announcements</p>
       <%= form_with url: sync_dividends_admin_data_imports_path, method: :post, local: true do |f| %>
         <div class="flex gap-2 mb-3">
-          <%= f.select :provider, [["Mock", "mock"], ["CSV", "csv"], ["NGX", "ngx"]], { selected: "mock" }, class: "flex-1 px-3 py-2 border border-gray-700 rounded-md text-sm bg-gray-800 text-white" %>
+          <%= f.select :provider, [["EODHD", "eodhd"], ["Market Composite", "market"], ["NGX Pulse", "ngx"], ["CSV", "csv"]], { selected: "eodhd" }, class: "flex-1 px-3 py-2 border border-gray-700 rounded-md text-sm bg-gray-800 text-white" %>
         </div>
-        <%= f.submit "Sync Dividends", class: "w-full bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition" %>
+        <%= f.submit "Sync Dividends", class: "w-full bg-navy-600 text-white px-4 py-2 rounded-md hover:bg-navy-700 transition" %>
       <% end %>
     </div>
 
@@ -44,9 +44,9 @@
       <p class="text-sm text-gray-400 mb-4">Sync latest market news</p>
       <%= form_with url: sync_news_admin_data_imports_path, method: :post, local: true do |f| %>
         <div class="flex gap-2 mb-3">
-          <%= f.select :provider, [["Mock", "mock"], ["NGX", "ngx"], ["API", "api"]], { selected: "mock" }, class: "flex-1 px-3 py-2 border border-gray-700 rounded-md text-sm bg-gray-800 text-white" %>
+          <%= f.select :provider, [["Market Composite", "market"], ["NGN Market", "ngn_market"], ["NGX Pulse", "ngx"]], { selected: "market" }, class: "flex-1 px-3 py-2 border border-gray-700 rounded-md text-sm bg-gray-800 text-white" %>
         </div>
-        <%= f.submit "Sync News", class: "w-full bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition" %>
+        <%= f.submit "Sync News", class: "w-full bg-navy-600 text-white px-4 py-2 rounded-md hover:bg-navy-700 transition" %>
       <% end %>
     </div>
   </div>
@@ -58,18 +58,12 @@
     <%= form_with url: import_csv_admin_data_imports_path, method: :post, local: true, multipart: true do |f| %>
       <div class="flex gap-3 items-end">
         <div class="flex-1">
-          <%= f.file_field :csv_file, accept: ".csv", class: "block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-purple-900/30 file:text-purple-700 hover:file:bg-purple-900/50" %>
+          <%= f.file_field :csv_file, accept: ".csv", class: "block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-navy-900/30 file:text-navy-700 hover:file:bg-navy-900/50" %>
           <p class="text-xs text-gray-400 mt-1">Expected format: ticker_symbol,date,open,high,low,close,volume</p>
         </div>
-        <%= f.submit "Import CSV", class: "bg-purple-600 text-white px-6 py-2 rounded-md hover:bg-purple-700 transition whitespace-nowrap" %>
+        <%= f.submit "Import CSV", class: "bg-navy-600 text-white px-6 py-2 rounded-md hover:bg-navy-700 transition whitespace-nowrap" %>
       </div>
     <% end %>
-    <div class="mt-4 p-4 bg-purple-900/30 border border-purple-800/50 rounded-md">
-      <p class="text-sm text-purple-300"><strong>Sample CSV:</strong></p>
-      <pre class="text-xs text-purple-400 mt-2 overflow-x-auto"><code>ticker_symbol,date,open,high,low,close,volume
-GTCO,2026-05-20,45.50,46.25,45.00,45.80,2500000
-UBA,2026-05-20,21.40,21.85,21.00,21.60,3200000</code></pre>
-    </div>
   </div>
 
   <!-- Import History -->
@@ -149,14 +143,14 @@ UBA,2026-05-20,21.40,21.85,21.00,21.60,3200000</code></pre>
     </div>
     <div class="bg-gray-900 border border-gray-800 rounded-lg shadow p-6">
       <p class="text-gray-400 text-sm mb-2">Records Imported (30 days)</p>
-      <p class="text-3xl font-bold text-purple-600"><%= DataImportLog.where("created_at > ?", 30.days.ago).sum(:records_imported) %></p>
+      <p class="text-3xl font-bold text-navy-600"><%= DataImportLog.where("created_at > ?", 30.days.ago).sum(:records_imported) %></p>
     </div>
   </div>
 </div>
 
 <style>
   pre {
-    background: rgba(15, 23, 42, 0.5); /* dark transparent slate */
+    background: rgba(0, 31, 63, 0.5);
     padding: 8px;
     border-radius: 4px;
   }

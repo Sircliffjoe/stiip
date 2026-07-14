@@ -16,7 +16,7 @@ module Subscriptions
         expires_at: 1.month.from_now
       )
       
-      user.premium!
+      user.premium_role!
       
       # Notify user
       Notifications::Create.new(

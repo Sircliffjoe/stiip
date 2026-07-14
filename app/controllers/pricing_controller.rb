@@ -24,7 +24,7 @@ class PricingController < ApplicationController
         name: "Premium",
         price: 2500,
         period: "month",
-        description: "Unlock the full power of STIIP intelligence",
+        description: "Unlock the full power of NoraCapital intelligence",
         features: [
           "Unlimited Watchlists & stocks",
           "Full historical price data",
@@ -42,12 +42,18 @@ class PricingController < ApplicationController
   end
 
   def checkout
+    if Rails.env.development? || Rails.env.test?
+      current_user.update!(role: :premium)
+      redirect_to profile_path, notice: "Subscription activated successfully (Simulation)!"
+      return
+    end
+
     # Use Paystack API to initialize payment
     begin
       paystack_response = PaystackService.initialize_payment(
         email: current_user.email,
         amount: 2500 * 100, # Amount in kobo (smallest unit)
-        reference: "STIIP-#{current_user.id}-#{Time.current.to_i}",
+        reference: "NORA-#{current_user.id}-#{Time.current.to_i}",
         metadata: {
           user_id: current_user.id,
           plan: "premium"

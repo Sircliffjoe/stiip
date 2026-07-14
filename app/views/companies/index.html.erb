@@ -2,7 +2,7 @@
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
     <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Listed Companies</h1>
     <div class="flex gap-2">
-      <input type="text" placeholder="Search companies..." class="px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm text-gray-900 placeholder-gray-500 focus:ring-purple-500 focus:border-purple-500 outline-none transition">
+      <input type="text" placeholder="Search companies..." class="px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm text-gray-900 placeholder-gray-500 focus:ring-navy-500 focus:border-navy-500 outline-none transition">
       <button class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 hover:border-gray-400 transition">Filter</button>
     </div>
   </div>
@@ -20,10 +20,10 @@
       <tbody class="divide-y divide-gray-200 bg-white">
         <% @companies.each do |company| %>
           <% cache company do %>
-            <tr class="hover:bg-purple-50 transition-colors cursor-pointer" onclick="window.location='<%= company_path(company.ticker_symbol) %>'">
+            <tr class="hover:bg-navy-50 transition-colors cursor-pointer" onclick="window.location='<%= company_path(company.ticker_symbol) %>'">
               <td class="px-6 py-4">
                 <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-600 to-purple-800 border border-purple-200 flex items-center justify-center font-bold text-white text-sm">
+                  <div class="w-10 h-10 rounded-full bg-navy-700 border border-navy-200 flex items-center justify-center font-bold text-white text-sm">
                     <%= company.ticker_symbol.first(3) %>
                   </div>
                   <div>

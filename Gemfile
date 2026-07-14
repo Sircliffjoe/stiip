@@ -39,6 +39,7 @@ gem "jsonapi-serializer"
 
 # === Rich Text ===
 gem "redcarpet"
+gem "trix-rails"
 
 # === Security ===
 gem "rack-attack"

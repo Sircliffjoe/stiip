@@ -13,7 +13,7 @@ module Subscriptions
       return unless subscription
 
       subscription.update!(status: :cancelled)
-      user.free!
+      user.free_role!
 
       Notification.create!(
         user: user,

@@ -6,18 +6,11 @@ class IngestMarketDataJob < ApplicationJob
 
   def perform(date_string = Date.current.to_s)
     date = Date.parse(date_string)
-    
-    # Determine Provider (Can be switched out in production via ENV)
-    provider_class = ENV.fetch('MARKET_DATA_PROVIDER', 'MockProvider')
-    provider = "DataIngestion::Providers::#{provider_class}".constantize.new
-    
-    # Fetch End of Day Prices
-    DataIngestion::FetchStockPrices.new(provider: provider).call(date: date)
-    
-    # Fetch Dividends for the month
-    DataIngestion::FetchDividends.new(provider: provider).call
+
+    provider_name = ENV.fetch("MARKET_DATA_PROVIDER", "market").to_sym
+    result = DataIngestion::SyncCoordinator.new(provider: provider_name).sync_all(date: date)
     
     # Log completion
-    AuditLog.create!(action: 'market_data_ingestion', details: "Ingested EOD prices and dividends for #{date}")
+    AuditLog.create!(action: "market_data_ingestion", details: "Ingested market data for #{date}: #{result.inspect}")
   end
 end

@@ -7,17 +7,17 @@
   </div>
 
   <div class="bg-white border border-gray-200 rounded-2xl p-8 relative overflow-hidden shadow-sm">
-    <div class="absolute top-0 right-0 w-64 h-64 bg-purple-200/20 rounded-full blur-3xl"></div>
+    <div class="absolute top-0 right-0 w-64 h-64 bg-navy-200/20 rounded-full blur-3xl"></div>
     
     <div class="flex flex-col md:flex-row justify-between gap-6 relative z-10">
       <div class="flex items-center gap-6">
-        <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-600 to-purple-800 border border-purple-200 shadow-inner flex items-center justify-center font-bold text-white text-2xl">
+        <div class="w-20 h-20 rounded-2xl bg-navy-700 border border-navy-200 shadow-inner flex items-center justify-center font-bold text-white text-2xl">
           <%= @company.ticker_symbol[0..1] %>
         </div>
         <div>
           <h1 class="text-3xl font-bold text-gray-900"><%= @company.name %></h1>
           <div class="flex items-center gap-3 mt-2 text-sm text-gray-600">
-            <span class="px-2.5 py-1 bg-purple-100 rounded-md font-medium text-purple-700 border border-purple-200"><%= @company.ticker_symbol %></span>
+            <span class="px-2.5 py-1 bg-navy-100 rounded-md font-medium text-navy-700 border border-navy-200"><%= @company.ticker_symbol %></span>
             <span>•</span>
             <span><%= @company.sector&.name || 'Unknown Sector' %></span>
           </div>
@@ -51,13 +51,13 @@
   </div>
 
   <!-- AI Explanation Card -->
-  <div class="bg-gradient-to-br from-purple-50 to-white border border-purple-200 rounded-2xl p-6 flex gap-4 items-start relative overflow-hidden group">
-    <div class="absolute inset-0 bg-purple-100/30 group-hover:bg-purple-100/50 transition-colors"></div>
-    <div class="w-10 h-10 rounded-xl bg-purple-100 border border-purple-300 flex items-center justify-center text-purple-600 shrink-0 relative z-10">
+  <div class="bg-navy-50 border border-navy-200 rounded-2xl p-6 flex gap-4 items-start relative overflow-hidden group">
+    <div class="absolute inset-0 bg-navy-100/30 group-hover:bg-navy-100/50 transition-colors"></div>
+    <div class="w-10 h-10 rounded-xl bg-navy-100 border border-navy-300 flex items-center justify-center text-navy-600 shrink-0 relative z-10">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
     </div>
     <div class="relative z-10">
-      <h3 class="font-bold text-purple-900">What this means for you</h3>
+      <h3 class="font-bold text-navy-900">What this means for you</h3>
       <p class="text-sm text-gray-700 mt-1.5 leading-relaxed"><%= @company.pe_ratio_explanation %></p>
     </div>
   </div>
@@ -71,11 +71,9 @@
       <% end %>
     </div>
     
-    <% price_data = premium_user? ? @company.stock_prices.order(date: :asc).pluck(:date, :close) : @company.stock_prices.where("date >= ?", 30.days.ago).order(date: :asc).pluck(:date, :close) %>
-    
-    <% if price_data.any? %>
+    <% if @price_data.any? %>
       <div class="h-80 w-full">
-        <%= line_chart price_data, prefix: "₦", colors: ["#7c3aed"], curve: true, points: false, dataset: {borderWidth: 2, backgroundColor: "rgba(124, 58, 237, 0.1)", fill: true} %>
+        <%= area_chart(@price_data.map.with_index { |(date, price), idx| ["Day #{idx + 1}", price] }, prefix: "₦", colors: ["#001f3f"], dataset: {backgroundColor: "rgba(0, 31, 63, 0.1)"}) %>
       </div>
     <% else %>
       <div class="h-80 w-full flex items-center justify-center bg-gray-50 rounded-xl border border-dashed border-gray-300">
@@ -84,14 +82,14 @@
     <% end %>
 
     <% unless premium_user? %>
-      <div class="mt-6 flex items-center justify-between p-4 bg-purple-50 border border-purple-100 rounded-xl">
+      <div class="mt-6 flex items-center justify-between p-4 bg-navy-50 border border-navy-100 rounded-xl">
         <div class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-full bg-purple-200 flex items-center justify-center text-purple-700">
+          <div class="w-8 h-8 rounded-full bg-navy-200 flex items-center justify-center text-navy-700">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
           </div>
-          <p class="text-sm font-medium text-purple-900">Unlock full historical price data and advanced dividend analytics.</p>
+          <p class="text-sm font-medium text-navy-900">Unlock full historical price data and advanced dividend analytics.</p>
         </div>
-        <%= link_to "Upgrade", pricing_path, class: "px-4 py-2 bg-purple-600 text-white text-sm font-semibold rounded-lg shadow-md hover:bg-purple-700 transition" %>
+        <%= link_to "Upgrade", pricing_path, class: "px-4 py-2 bg-navy-600 text-white text-sm font-semibold rounded-lg shadow-md hover:bg-navy-700 transition" %>
       </div>
     <% end %>
   </div>
@@ -102,11 +100,11 @@
       <h2 class="text-xl font-bold text-gray-900">Dividend History</h2>
     </div>
     
-    <% dividend_data = @company.dividends.where.not(amount: nil).order(qualification_date: :asc).pluck(:qualification_date, :amount) %>
+    <% dividend_data = @company.dividends.where.not(amount: nil).order(qualification_date: :asc).map { |d| [d.qualification_date&.strftime("%b %Y") || "Unknown", d.amount] } %>
     
     <% if dividend_data.any? %>
       <div class="h-64 w-full">
-        <%= column_chart dividend_data, prefix: "₦", colors: ["#10b981"], dataset: {borderRadius: 4} %>
+        <%= column_chart dividend_data, prefix: "₦", colors: ["#d4af37"], dataset: {borderRadius: 4} %>
       </div>
     <% else %>
       <div class="h-64 w-full flex items-center justify-center bg-gray-50 rounded-xl border border-dashed border-gray-300">

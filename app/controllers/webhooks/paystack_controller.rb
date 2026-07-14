@@ -32,7 +32,7 @@ module Webhooks
           Notification.create!(
             user: user,
             title: "Welcome to Premium!",
-            body: "Your payment was successful. You now have full access to all STIIP features.",
+            body: "Your payment was successful. You now have full access to all NoraCapital features.",
             notification_type: "success"
           )
         end

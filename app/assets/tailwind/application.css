@@ -1,20 +1,36 @@
 @import "tailwindcss";
 
 @theme {
-  --animate-blob: blob 7s infinite;
   --animate-glow: glow 2s ease-in-out infinite alternate;
   --animate-float: float 6s ease-in-out infinite;
 
-  @keyframes blob {
-    0% { transform: translate(0px, 0px) scale(1); }
-    33% { transform: translate(30px, -50px) scale(1.1); }
-    66% { transform: translate(-20px, 20px) scale(0.9); }
-    100% { transform: translate(0px, 0px) scale(1); }
-  }
+  --color-navy-50: #eaf0f6;
+  --color-navy-100: #d6e2ee;
+  --color-navy-200: #adc5dc;
+  --color-navy-300: #7fa3c7;
+  --color-navy-400: #4778a8;
+  --color-navy-500: #0b4f86;
+  --color-navy-600: #003b73;
+  --color-navy-700: #001f3f;
+  --color-navy-800: #001833;
+  --color-navy-900: #001226;
+  --color-navy-950: #000b18;
+
+  --color-gold-50: #fffaf0;
+  --color-gold-100: #fff2bf;
+  --color-gold-200: #ffe680;
+  --color-gold-300: #f4d35e;
+  --color-gold-400: #d4af37;
+  --color-gold-500: #d4af37;
+  --color-gold-600: #d4af37;
+  --color-gold-700: #d4af37;
+  --color-gold-800: #d4af37;
+  --color-gold-900: #d4af37;
+  --color-gold-950: #d4af37;
 
   @keyframes glow {
-    from { box-shadow: 0 0 20px -10px rgba(16, 185, 129, 0.3); }
-    to { box-shadow: 0 0 30px -5px rgba(16, 185, 129, 0.5); }
+    from { box-shadow: 0 0 20px -10px rgba(212, 175, 55, 0.25); }
+    to { box-shadow: 0 0 30px -5px rgba(212, 175, 55, 0.35); }
   }
 
   @keyframes float {
@@ -26,6 +42,15 @@
 /* Global smooth scrolling */
 html {
   scroll-behavior: smooth;
+}
+
+.app-grid-bg {
+  background-color: #f7f9fc;
+  background-image:
+    linear-gradient(rgba(0, 31, 63, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 31, 63, 0.12) 1px, transparent 1px);
+  background-size: 32px 32px;
+  background-position: -1px -1px;
 }
 
 /* Animation delays */
@@ -41,12 +66,12 @@ html {
   width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #0f172a;
+  background: #001833;
 }
 ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #d4af37;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: #d4af37;
 }

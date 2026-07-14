@@ -45,7 +45,27 @@
 
 # Ignore development files
 /.devcontainer
+/.agents
+/.codex
+/scratch_*
+/PHASE_*
+/IMPLEMENTATION_*
+/PROJECT_REVIEW_*
+/prompt.md
+/description.md
+/todo.md
+/brakeman.json
+
+# Ignore test suite
+/spec/
+/.rspec
 
 # Ignore Docker-related files
 /.dockerignore
 /Dockerfile*
+
+# Ignore Procfile.dev (development only)
+/Procfile.dev
+
+# Ignore README
+/README.md

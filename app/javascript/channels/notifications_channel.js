@@ -15,7 +15,7 @@ consumer.subscriptions.create("NotificationsChannel", {
     if (!container) return;
     
     const toast = document.createElement('div');
-    toast.className = 'p-4 rounded-md bg-white border border-sky-200 shadow-lg mb-2 transform transition-all duration-300 translate-y-0 opacity-100';
+    toast.className = 'p-4 rounded-md bg-white border border-navy-200 shadow-lg mb-2 transform transition-all duration-300 translate-y-0 opacity-100';
     toast.innerHTML = `
       <div class="flex items-start">
         <div class="ml-3 w-0 flex-1 pt-0.5">

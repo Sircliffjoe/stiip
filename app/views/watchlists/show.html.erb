@@ -1,7 +1,7 @@
 <div class="space-y-8">
   <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
     <div>
-      <%= link_to "Watchlists", watchlists_path, class: "text-sm font-medium text-purple-600 hover:text-purple-700" %>
+      <%= link_to "Watchlists", watchlists_path, class: "text-sm font-medium text-navy-600 hover:text-navy-700" %>
       <h1 class="mt-2 text-3xl font-bold text-gray-900 tracking-tight"><%= @watchlist.name %></h1>
       <p class="mt-1 text-gray-600"><%= pluralize(@watchlist_items.size, "tracked company") %></p>
     </div>
@@ -22,7 +22,7 @@
             <% company = item.company %>
             <div class="flex flex-col gap-4 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <%= link_to company.ticker_symbol, company_path(company.ticker_symbol), class: "font-semibold text-purple-700 hover:text-purple-800" %>
+                <%= link_to company.ticker_symbol, company_path(company.ticker_symbol), class: "font-semibold text-navy-700 hover:text-navy-800" %>
                 <p class="text-sm text-gray-600"><%= company.name %></p>
                 <p class="mt-1 text-xs text-gray-500"><%= company.sector&.name %></p>
               </div>
@@ -44,8 +44,8 @@
     <div class="rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
       <h2 class="font-semibold text-gray-900">Add Company</h2>
       <%= form_with url: watchlist_watchlist_items_path(@watchlist), method: :post, class: "mt-4 space-y-4" do |f| %>
-        <%= select_tag :company_id, options_from_collection_for_select(@companies, :id, :ticker_symbol), class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-purple-500 focus:ring-purple-500" %>
-        <%= f.submit "Add to Watchlist", class: "w-full rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-700" %>
+        <%= select_tag :company_id, options_from_collection_for_select(@companies, :id, :ticker_symbol), class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-navy-500 focus:ring-navy-500" %>
+        <%= f.submit "Add to Watchlist", class: "w-full rounded-lg bg-navy-600 px-4 py-2 text-sm font-semibold text-white hover:bg-navy-700" %>
       <% end %>
     </div>
   </div>

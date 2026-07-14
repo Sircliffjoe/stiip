@@ -8,8 +8,8 @@ export default class extends Controller {
   }
   showTab(index) {
     this.tabTargets.forEach((el, i) => {
-      el.classList.toggle("border-sky-500", index === i)
-      el.classList.toggle("text-sky-600", index === i)
+      el.classList.toggle("border-navy-500", index === i)
+      el.classList.toggle("text-navy-600", index === i)
     })
     this.panelTargets.forEach((el, i) => {
       el.classList.toggle("hidden", index !== i)

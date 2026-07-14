@@ -1,13 +1,14 @@
-# stiip
+# NoraCapital
 
-Minimal README to get the application running, tested, and deployed.
+Nigerian Stock Intelligence Platform — your smart companion for investing in Nigerian stocks.
 
-Prerequisites:
-- Ruby 3.3.10 (see .ruby-version)
-- PostgreSQL (local development)
-- Node / npm if you work with JS tooling for assets
+## Prerequisites
 
-Quickstart (development):
+- Ruby 3.3.10 (see `.ruby-version`)
+- PostgreSQL
+- Node / npm (for Tailwind CSS compilation)
+
+## Quickstart (Development)
 
 1. Install dependencies:
 
@@ -25,31 +26,28 @@ bin/rails db:create db:migrate db:seed
 3. Run the server:
 
 ```bash
-bin/rails server
+bin/dev
 ```
 
-Testing:
+## Testing
 
 ```bash
 bundle exec rspec
 ```
 
-CI:
-- A GitHub Actions workflow is provided at `.github/workflows/ci.yml` to run the test
-	suite on push and PRs.
-
-Docker (production-style image):
+## Docker (Production)
 
 Build and run the container (ensure `RAILS_MASTER_KEY` is available):
 
 ```bash
-docker build -t stiip .
-docker run -d -p 80:80 -e RAILS_MASTER_KEY=<master_key> --name stiip stiip
+docker build -t noracapital .
+docker run -d -p 80:80 -e RAILS_MASTER_KEY=<master_key> --name noracapital noracapital
 ```
 
-Kamal deployment:
-- A minimal `kamal.yml` is included to deploy the existing `Dockerfile` with Kamal.
-	See https://kamal-deploy.org for detailed usage.
+## Deployment
 
-Further documentation:
-- See `PHASE_1_COMPLETION.md` and related roadmap files for project details.
+Deployed via Coolify on VPS. See deployment documentation for details.
+
+## License
+
+All rights reserved.

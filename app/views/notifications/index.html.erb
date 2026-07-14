@@ -1,41 +1,41 @@
 <div class="space-y-6">
   <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
     <div>
-      <h1 class="text-3xl font-bold text-white tracking-tight">Notifications</h1>
-      <p class="mt-1 text-gray-400"><%= pluralize(current_user.notifications.unread.count, "unread notification") %></p>
+      <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Notifications</h1>
+      <p class="mt-1 text-gray-600"><%= pluralize(current_user.notifications.unread.count, "unread notification") %></p>
     </div>
     <% if current_user.notifications.unread.exists? %>
-      <%= button_to "Mark all read", mark_all_read_notifications_path, method: :patch, class: "rounded-lg border border-gray-700 bg-gray-800 px-4 py-2 text-sm font-semibold text-gray-300 hover:bg-gray-700 hover:text-white transition-colors" %>
+      <%= button_to "Mark all read", mark_all_read_notifications_path, method: :patch, class: "rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors" %>
     <% end %>
   </div>
 
-  <div class="overflow-hidden rounded-xl border border-gray-800 bg-gray-900 shadow-sm">
+  <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
     <% if @notifications.any? %>
-      <div class="divide-y divide-gray-800">
+      <div class="divide-y divide-gray-200">
         <% @notifications.each do |notification| %>
-          <div class="flex flex-col gap-4 px-6 py-5 sm:flex-row sm:items-start sm:justify-between <%= notification.read_at? ? "bg-gray-900" : "bg-purple-900/10 border-l-2 border-purple-500" %> transition-colors">
+          <div class="flex flex-col gap-4 px-6 py-5 sm:flex-row sm:items-start sm:justify-between <%= notification.read_at? ? "bg-white" : "bg-navy-50 border-l-2 border-navy-500" %> transition-colors">
             <div>
               <div class="flex items-center gap-3">
-                <h2 class="font-semibold text-gray-200"><%= notification.title %></h2>
+                <h2 class="font-semibold text-gray-900"><%= notification.title %></h2>
                 <% unless notification.read_at? %>
-                  <span class="rounded-full bg-purple-500/20 border border-purple-500/30 px-2.5 py-0.5 text-xs font-medium text-purple-400">New</span>
+                  <span class="rounded-full bg-navy-100 border border-navy-300 px-2.5 py-0.5 text-xs font-medium text-navy-700">New</span>
                 <% end %>
               </div>
-              <p class="mt-2 text-sm text-gray-400 leading-relaxed"><%= notification.body %></p>
+              <p class="mt-2 text-sm text-gray-600 leading-relaxed"><%= notification.body %></p>
               <p class="mt-2 text-xs text-gray-500 font-medium"><%= time_ago_in_words(notification.created_at) %> ago</p>
             </div>
             <% unless notification.read_at? %>
-              <%= button_to "Mark read", notification_path(notification), method: :patch, class: "rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white transition-colors whitespace-nowrap" %>
+              <%= button_to "Mark read", notification_path(notification), method: :patch, class: "rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors whitespace-nowrap" %>
             <% end %>
           </div>
         <% end %>
       </div>
     <% else %>
       <div class="p-16 text-center">
-        <div class="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-700">
-          <svg class="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-200">
+          <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
         </div>
-        <h3 class="text-lg font-medium text-gray-300">You're all caught up</h3>
+        <h3 class="text-lg font-medium text-gray-900">You're all caught up</h3>
         <p class="text-sm text-gray-500 mt-1">No new notifications right now.</p>
       </div>
     <% end %>

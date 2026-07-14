@@ -3,18 +3,18 @@
     <div class="flex items-center justify-between h-16">
       <div class="flex items-center">
         <a href="/" class="flex items-center gap-2.5 group">
-          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-600 to-purple-800 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-purple-600/20 group-hover:shadow-purple-600/40 transition-all">S</div>
-          <span class="text-xl font-bold text-gray-900 hidden sm:block tracking-tight">STIIP</span>
+          <img src="/logo.png" alt="NoraCapital" class="h-20 w-auto max-w-[180px] object-contain">
         </a>
       </div>
       
       <div class="hidden md:flex flex-1 justify-center px-4 sm:px-8 gap-8 text-sm font-medium">
-        <a href="/market" class="text-gray-600 hover:text-purple-600 transition-colors duration-200">Market</a>
-        <a href="/companies" class="text-gray-600 hover:text-purple-600 transition-colors duration-200">Companies</a>
-        <a href="/dividends" class="text-gray-600 hover:text-purple-600 transition-colors duration-200">Dividends</a>
-        <a href="/news" class="text-gray-600 hover:text-purple-600 transition-colors duration-200">News</a>
-        <a href="/learn" class="text-gray-600 hover:text-purple-600 transition-colors duration-200">Learn</a>
-        <a href="/pricing" class="text-gray-600 hover:text-purple-600 transition-colors duration-200">Pricing</a>
+        <a href="/market" class="text-gray-600 hover:text-navy-600 transition-colors duration-200">Market</a>
+        <a href="/companies" class="text-gray-600 hover:text-navy-600 transition-colors duration-200">Companies</a>
+        <a href="/screener" class="text-gray-600 hover:text-navy-600 transition-colors duration-200">Screener</a>
+        <a href="/dividends" class="text-gray-600 hover:text-navy-600 transition-colors duration-200">Dividends</a>
+        <a href="/news" class="text-gray-600 hover:text-navy-600 transition-colors duration-200">News</a>
+        <a href="/learn" class="text-gray-600 hover:text-navy-600 transition-colors duration-200">Learn</a>
+        <a href="/pricing" class="text-gray-600 hover:text-navy-600 transition-colors duration-200">Pricing</a>
       </div>
       
       <div class="flex items-center gap-4">
@@ -25,9 +25,7 @@
         <% if @user %>
           <details class="group relative">
             <summary class="flex cursor-pointer list-none items-center gap-2 rounded-full border border-transparent p-1 pr-2 transition hover:border-gray-300 hover:bg-gray-100 [&::-webkit-details-marker]:hidden" aria-haspopup="menu">
-              <div class="w-8 h-8 rounded-full bg-gradient-to-br from-pink-400 to-fuchsia-500 text-white flex items-center justify-center font-bold shadow-inner">
-                <%= @user.first_name.to_s.first&.upcase || "U" %>
-              </div>
+              <img src="/icon.png" alt="" class="h-8 w-8 rounded-full object-cover shadow-inner">
               <span class="hidden text-sm font-medium text-gray-700 lg:inline"><%= @user.first_name %></span>
             </summary>
             <div class="absolute right-0 z-50 mt-2 w-64 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl focus:outline-none" role="menu">
@@ -35,21 +33,21 @@
                 <p class="text-sm font-semibold text-gray-900"><%= @user.full_name %></p>
                 <p class="mt-0.5 truncate text-xs text-gray-500"><%= @user.email %></p>
               </div>
-              <a href="/profile" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600">Profile</a>
-              <a href="/dashboard" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600">Dashboard</a>
+              <a href="/profile" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-navy-50 hover:text-navy-600">Profile</a>
+              <a href="/dashboard" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-navy-50 hover:text-navy-600">Dashboard</a>
               <% if @user.admin_role? || @user.analyst_role? %>
-                <a href="/admin/dashboard" class="block px-4 py-2.5 text-sm font-medium text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800">Admin Dashboard</a>
+                <a href="/admin/dashboard" class="block px-4 py-2.5 text-sm font-medium text-navy-700 hover:bg-navy-50 hover:text-navy-800">Admin Dashboard</a>
               <% end %>
-              <a href="/watchlists" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600">Watchlists</a>
-              <a href="/notifications" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600">Notifications</a>
-              <a href="/settings" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600">Settings</a>
+              <a href="/watchlists" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-navy-50 hover:text-navy-600">Watchlists</a>
+              <a href="/notifications" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-navy-50 hover:text-navy-600">Notifications</a>
+              <a href="/settings" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-navy-50 hover:text-navy-600">Settings</a>
               <div class="border-t border-gray-200 my-1"></div>
               <%= button_to "Sign out", "/users/sign_out", method: :delete, class: "block w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50" %>
             </div>
           </details>
         <% else %>
           <a href="/users/sign_in" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Log in</a>
-          <a href="/users/sign_up" class="text-sm font-semibold bg-gradient-to-r from-purple-600 to-purple-700 text-white px-4 py-2 rounded-lg shadow-md shadow-purple-600/20 hover:shadow-lg hover:shadow-purple-600/30 hover:-translate-y-0.5 transition-all">Sign up</a>
+          <a href="/users/sign_up" class="text-sm font-bold bg-navy-700 text-white px-4 py-2 rounded-lg shadow-md hover:shadow-lg hover:shadow-navy-900/20 hover:-translate-y-0.5 transition-all">Sign up</a>
         <% end %>
       </div>
     </div>

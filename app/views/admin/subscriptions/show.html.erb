@@ -2,7 +2,7 @@
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Header -->
     <div class="mb-8">
-      <%= link_to "← Back to Subscriptions", admin_subscriptions_path, class: "text-purple-600 hover:text-purple-700 font-medium mb-4 inline-block" %>
+      <%= link_to "← Back to Subscriptions", admin_subscriptions_path, class: "text-navy-600 hover:text-navy-700 font-medium mb-4 inline-block" %>
       <h1 class="text-3xl font-bold text-gray-900">Subscription Details</h1>
     </div>
 
@@ -66,7 +66,7 @@
 
       <!-- Actions -->
       <div class="p-6 flex gap-3">
-        <%= link_to "Edit", edit_admin_subscription_path(@subscription), class: "px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium" %>
+        <%= link_to "Edit", edit_admin_subscription_path(@subscription), class: "px-4 py-2 bg-navy-600 text-white rounded-lg hover:bg-navy-700 font-medium" %>
         <%= link_to "Cancel Subscription", admin_subscription_path(@subscription), method: :delete, data: { confirm: "This will downgrade the user to free. Continue?" }, class: "px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium" %>
       </div>
     </div>

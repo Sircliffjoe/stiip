@@ -14,11 +14,12 @@ module DataIngestion
     # Public API
     # ============================================
 
-    def sync_stock_prices(date: Date.current, rollback_on_error: true)
+    def sync_stock_prices(date: Date.current, rollback_on_error: true, ensure_companies: true)
       Rails.logger.info("[SyncCoordinator] Starting stock price sync for #{date}")
       
       begin
         raise SyncError, "Stock price date cannot be in the future" if date.to_date > Date.current
+        sync_companies(rollback_on_error: rollback_on_error) if ensure_companies && @provider.respond_to?(:fetch_companies)
 
         raw_data = fetch_prices(date)
         normalized_data = normalize_prices(raw_data)
@@ -31,7 +32,45 @@ module DataIngestion
       end
     end
 
-    def sync_dividends(start_date: Date.current, end_date: 1.month.from_now, rollback_on_error: true)
+    def sync_companies(rollback_on_error: true)
+      Rails.logger.info("[SyncCoordinator] Starting company sync")
+
+      begin
+        raise SyncError, "Provider does not support company sync" unless @provider.respond_to?(:fetch_companies)
+
+        raw_data = @provider.fetch_companies
+        persisted_count = persist_companies(raw_data)
+
+        Rails.logger.info("[SyncCoordinator] Successfully synced #{persisted_count} companies")
+        { success: true, count: persisted_count }
+      rescue StandardError => e
+        handle_sync_error(e, "companies", rollback_on_error)
+      end
+    end
+
+    def sync_company_price(ticker_symbol, date: Date.current, rollback_on_error: true)
+      Rails.logger.info("[SyncCoordinator] Starting stock price sync for #{ticker_symbol}")
+
+      begin
+        raise SyncError, "Stock price date cannot be in the future" if date.to_date > Date.current
+
+        raw_data = if @provider.respond_to?(:fetch_stock_price)
+                     [@provider.fetch_stock_price(ticker_symbol, date: date)].compact
+                   else
+                     fetch_prices(date).select { |row| row[:ticker_symbol].to_s.casecmp?(ticker_symbol.to_s) }
+                   end
+
+        normalized_data = normalize_prices(raw_data)
+        persisted_count = persist_prices(normalized_data)
+
+        Rails.logger.info("[SyncCoordinator] Successfully synced #{persisted_count} stock price for #{ticker_symbol}")
+        { success: true, count: persisted_count, date: date }
+      rescue StandardError => e
+        handle_sync_error(e, "stock_price", rollback_on_error)
+      end
+    end
+
+    def sync_dividends(start_date: 10.years.ago.to_date, end_date: Date.current, rollback_on_error: true)
       Rails.logger.info("[SyncCoordinator] Starting dividend sync from #{start_date} to #{end_date}")
       
       begin
@@ -63,9 +102,15 @@ module DataIngestion
 
     def sync_all(date: Date.current, rollback_on_error: true)
       Rails.logger.info("[SyncCoordinator] Starting full sync")
+      companies_result = if @provider.respond_to?(:fetch_companies)
+                           sync_companies(rollback_on_error: rollback_on_error)
+                         else
+                           { success: true, count: 0, skipped: true }
+                         end
       
       results = {
-        stock_prices: sync_stock_prices(date: date, rollback_on_error: rollback_on_error),
+        companies: companies_result,
+        stock_prices: sync_stock_prices(date: date, rollback_on_error: rollback_on_error, ensure_companies: false),
         dividends: sync_dividends(rollback_on_error: rollback_on_error),
         news: sync_news(rollback_on_error: rollback_on_error)
       }
@@ -94,6 +139,12 @@ module DataIngestion
         raise ArgumentError, "CSV provider requires file_path parameter"
       when :ngx
         Providers::NgxProvider.new
+      when :ngn_market
+        Providers::NgnMarketProvider.new
+      when :eodhd
+        Providers::EodhdProvider.new
+      when :market, :composite
+        Providers::CompositeMarketProvider.new
       when :api
         Providers::ApiProvider.new
       when Providers::BaseProvider
@@ -166,11 +217,11 @@ module DataIngestion
             high: price_data[:high],
             low: price_data[:low],
             close: price_data[:close],
-            volume: price_data[:volume]
+            volume: price_data[:volume],
+            change_percent: price_data[:change_percent]
           )
           
-          # Update company's current price
-          company.update!(current_price: price_data[:close]) if price_data[:close]
+          company.update!(company_price_attributes(price_data))
           
           count += 1
         end
@@ -181,6 +232,86 @@ module DataIngestion
       raise SyncError, "Failed to persist prices: #{e.message}"
     end
 
+    def persist_companies(data)
+      count = 0
+
+      ActiveRecord::Base.transaction do
+        data.each do |company_data|
+          ticker = company_data[:ticker_symbol].to_s.upcase.strip
+          next if ticker.blank?
+
+          sector = find_or_create_sector(company_data[:sector])
+          company = Company.find_or_initialize_by(ticker_symbol: ticker)
+          company.assign_attributes(company_attributes(company_data, sector))
+          company.save!
+          count += 1
+        end
+      end
+
+      count
+    rescue StandardError => e
+      raise SyncError, "Failed to persist companies: #{e.message}"
+    end
+
+    def find_or_create_sector(name)
+      normalized_name = normalize_sector_name(name)
+      slug = normalized_name.parameterize
+      sector = Sector.find_or_initialize_by(slug: slug)
+      sector.name = normalized_name
+      sector.save!
+      sector
+    end
+
+    def normalize_sector_name(name)
+      value = name.to_s.strip
+      return "Unclassified" if value.blank?
+      return "ICT" if value.casecmp?("ict")
+
+      value == value.upcase ? value.titleize : value
+    end
+
+    def company_attributes(company_data, sector)
+      {
+        name: normalize_company_name(company_data[:name], company_data[:ticker_symbol]),
+        sector: sector,
+        website: company_data[:website],
+        market_cap: company_data[:market_cap],
+        current_price: company_data[:current_price],
+        opening_price: company_data[:opening_price],
+        closing_price: company_data[:closing_price],
+        shares_outstanding: company_data[:shares_outstanding],
+        high_52_week: company_data[:high_52_week],
+        low_52_week: company_data[:low_52_week],
+        listed: company_data.fetch(:listed, true)
+      }.compact
+    end
+
+    def normalize_company_name(name, ticker_symbol)
+      value = name.to_s.strip
+      return ticker_symbol.to_s.upcase if value.blank?
+      return value unless value == value.upcase
+
+      value.titleize
+        .gsub(/\bPlc\b/, "PLC")
+        .gsub(/\bMtn\b/, "MTN")
+        .gsub(/\bFbn\b/, "FBN")
+        .gsub(/\bUba\b/, "UBA")
+        .gsub(/\bGtcoplc\b/, "GTCO PLC")
+    end
+
+    def company_price_attributes(price_data)
+      {
+        current_price: price_data[:close],
+        opening_price: price_data[:open],
+        closing_price: price_data[:close],
+        market_cap: price_data[:market_cap],
+        shares_outstanding: price_data[:shares_outstanding],
+        pe_ratio: price_data[:pe_ratio],
+        high_52_week: price_data[:high_52_week],
+        low_52_week: price_data[:low_52_week]
+      }.compact
+    end
+
     def persist_dividends(data)
       count = 0
       
@@ -189,18 +320,18 @@ module DataIngestion
           company = Company.find_by(ticker_symbol: div_data[:ticker_symbol])
           next unless company
           
-          dividend = Dividend.find_or_initialize_by(
+          Dividend.upsert({
             company_id: company.id,
             year: div_data[:year],
-            interim: div_data[:interim] || false
-          )
-          
-          dividend.update!(
+            interim: div_data[:interim] || false,
             qualification_date: div_data[:qualification_date],
             amount: div_data[:amount],
+            currency: div_data[:currency] || "NGN",
             payment_date: div_data[:payment_date],
-            status: :announced
-          )
+            status: :announced,
+            created_at: Time.current,
+            updated_at: Time.current
+          }, unique_by: [:company_id, :year, :interim], on_duplicate: :update)
           
           count += 1
         end

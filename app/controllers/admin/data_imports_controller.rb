@@ -31,9 +31,9 @@ module Admin
 
     # POST /admin/data-imports/sync-dividends
     def sync_dividends
-      start_date = params[:start_date].present? ? Date.parse(params[:start_date]) : Date.current
-      end_date = params[:end_date].present? ? Date.parse(params[:end_date]) : 1.month.from_now
-      provider = (params[:provider] || "mock").to_sym
+      start_date = params[:start_date].present? ? Date.parse(params[:start_date]) : 10.years.ago.to_date
+      end_date = params[:end_date].present? ? Date.parse(params[:end_date]) : Date.current
+      provider = (params[:provider] || "eodhd").to_sym
       
       begin
         coordinator = DataIngestion::SyncCoordinator.new(provider: provider)

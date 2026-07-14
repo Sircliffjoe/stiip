@@ -2,8 +2,8 @@
 # check=error=true
 
 # This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
-# docker build -t stiip .
-# docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name stiip stiip
+# docker build -t noracapital .
+# docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name noracapital noracapital
 
 # For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
 

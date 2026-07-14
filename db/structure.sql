@@ -80,7 +80,14 @@ CREATE TABLE public.companies (
     founded_year integer,
     listed boolean DEFAULT true,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    country character varying DEFAULT 'NG'::character varying,
+    ytd_return numeric(8,2) DEFAULT 0.0,
+    revenue bigint,
+    net_profit bigint,
+    signal integer DEFAULT 1,
+    ai_analysis_summary text,
+    ai_analysis_updated_at timestamp(6) without time zone
 );
 
 
@@ -164,7 +171,9 @@ CREATE TABLE public.educational_contents (
     author_id uuid,
     published_at timestamp(6) without time zone,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    body text,
+    excerpt text
 );
 
 
@@ -1895,6 +1904,8 @@ ALTER TABLE ONLY public.company_news
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260714162514'),
+('20260525'),
 ('20260523211452'),
 ('20260522000000'),
 ('20260521155946'),

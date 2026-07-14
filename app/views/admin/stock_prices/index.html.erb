@@ -1,8 +1,8 @@
 <div class="flex justify-between items-center mb-6">
   <h1 class="text-2xl font-bold text-white">Stock Prices (EOD)</h1>
   <%= form_tag import_admin_stock_prices_path, multipart: true, class: "flex items-center gap-2" do %>
-    <%= file_field_tag :file, class: "text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-900/50" %>
-    <%= submit_tag "Upload CSV", class: "bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 cursor-pointer" %>
+    <%= file_field_tag :file, class: "text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-navy-50 file:text-navy-700 hover:file:bg-navy-900/50" %>
+    <%= submit_tag "Upload CSV", class: "bg-navy-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-navy-700 cursor-pointer" %>
   <% end %>
 </div>
 <div class="bg-gray-900 border border-gray-800 shadow overflow-hidden sm:rounded-lg border border-gray-800 p-8 text-center text-gray-400">

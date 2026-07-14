@@ -12,6 +12,11 @@ class Company < ApplicationRecord
   has_many :news_articles, through: :company_news
   has_many :market_events, dependent: :destroy
 
+  enum :signal, { hold: 1, buy: 2, sell: 3 }
+
+  scope :ngx, -> { where(country: "NG") }
+  scope :us, -> { where(country: "US") }
+
   validates :name, presence: true
   validates :ticker_symbol, presence: true, uniqueness: true
 

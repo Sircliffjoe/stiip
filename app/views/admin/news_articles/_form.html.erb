@@ -7,48 +7,48 @@
 
   <div>
     <%= f.label :title, class: "block text-sm font-medium text-gray-300" %>
-    <%= f.text_field :title, class: "mt-1 w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white focus:border-emerald-500 focus:ring-emerald-500" %>
+    <%= f.text_field :title, class: "mt-1 w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white focus:border-navy-500 focus:ring-navy-500" %>
   </div>
 
   <div class="grid gap-4 md:grid-cols-2">
     <div>
       <%= f.label :category, class: "block text-sm font-medium text-gray-300" %>
-      <%= f.text_field :category, placeholder: "Earnings, Market, Economy", class: "mt-1 w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white focus:border-emerald-500 focus:ring-emerald-500" %>
+      <%= f.text_field :category, placeholder: "Earnings, Market, Economy", class: "mt-1 w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white focus:border-navy-500 focus:ring-navy-500" %>
     </div>
     <div>
       <%= f.label :source, class: "block text-sm font-medium text-gray-300" %>
-      <%= f.text_field :source, class: "mt-1 w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white focus:border-emerald-500 focus:ring-emerald-500" %>
+      <%= f.text_field :source, class: "mt-1 w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white focus:border-navy-500 focus:ring-navy-500" %>
     </div>
   </div>
 
   <div>
     <%= f.label :summary, class: "block text-sm font-medium text-gray-300" %>
-    <%= f.text_area :summary, rows: 6, class: "mt-1 w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white focus:border-emerald-500 focus:ring-emerald-500" %>
+    <%= f.text_area :summary, rows: 6, class: "mt-1 w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white focus:border-navy-500 focus:ring-navy-500" %>
   </div>
 
   <div>
     <%= f.label :source_url, class: "block text-sm font-medium text-gray-300" %>
-    <%= f.url_field :source_url, class: "mt-1 w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white focus:border-emerald-500 focus:ring-emerald-500" %>
+    <%= f.url_field :source_url, class: "mt-1 w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white focus:border-navy-500 focus:ring-navy-500" %>
   </div>
 
   <div>
     <%= f.label :company_ids, "Related companies", class: "block text-sm font-medium text-gray-300" %>
-    <%= f.collection_select :company_ids, Company.order(:ticker_symbol), :id, :ticker_symbol, {}, multiple: true, class: "mt-1 min-h-32 w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white focus:border-emerald-500 focus:ring-emerald-500" %>
+    <%= f.collection_select :company_ids, Company.order(:ticker_symbol), :id, :ticker_symbol, {}, multiple: true, class: "mt-1 min-h-32 w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white focus:border-navy-500 focus:ring-navy-500" %>
   </div>
 
   <div class="grid gap-4 md:grid-cols-2">
     <div>
       <%= f.label :published_at, class: "block text-sm font-medium text-gray-300" %>
-      <%= f.datetime_field :published_at, class: "mt-1 w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white focus:border-emerald-500 focus:ring-emerald-500" %>
+      <%= f.datetime_field :published_at, class: "mt-1 w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white focus:border-navy-500 focus:ring-navy-500" %>
     </div>
     <label class="mt-7 flex items-center gap-2 text-sm font-medium text-gray-300">
-      <%= f.check_box :featured, class: "rounded border-gray-700 bg-gray-950 text-emerald-600 focus:ring-emerald-500" %>
+      <%= f.check_box :featured, class: "rounded border-gray-700 bg-gray-950 text-navy-600 focus:ring-navy-500" %>
       Featured article
     </label>
   </div>
 
   <div class="flex gap-3">
-    <%= f.submit class: "rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500" %>
+    <%= f.submit class: "rounded-lg bg-navy-600 px-4 py-2 text-sm font-semibold text-white hover:bg-navy-500" %>
     <%= link_to "Cancel", admin_news_articles_path, class: "rounded-lg border border-gray-700 px-4 py-2 text-sm font-semibold text-gray-300 hover:bg-gray-800" %>
   </div>
 <% end %>

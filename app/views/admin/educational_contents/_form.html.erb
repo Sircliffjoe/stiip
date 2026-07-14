@@ -5,40 +5,80 @@
     </div>
   <% end %>
 
+  <!-- Trix CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/trix@latest/dist/trix.css">
+
   <div>
     <%= f.label :title, class: "block text-sm font-medium text-gray-300" %>
-    <%= f.text_field :title, class: "mt-1 w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white focus:border-emerald-500 focus:ring-emerald-500" %>
+    <%= f.text_field :title, class: "mt-1 w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white focus:border-navy-500 focus:ring-navy-500" %>
   </div>
 
   <div class="grid gap-4 md:grid-cols-2">
     <div>
       <%= f.label :category, class: "block text-sm font-medium text-gray-300" %>
-      <%= f.text_field :category, placeholder: "Basics, Dividends, Valuation", class: "mt-1 w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white focus:border-emerald-500 focus:ring-emerald-500" %>
+      <%= f.text_field :category, placeholder: "Basics, Dividends, Valuation", class: "mt-1 w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white focus:border-navy-500 focus:ring-navy-500" %>
     </div>
     <div>
       <%= f.label :difficulty_level, class: "block text-sm font-medium text-gray-300" %>
-      <%= f.select :difficulty_level, EducationalContent.difficulty_levels.keys.map { |level| [level.humanize, level] }, {}, class: "mt-1 w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white focus:border-emerald-500 focus:ring-emerald-500" %>
+      <%= f.select :difficulty_level, EducationalContent.difficulty_levels.keys.map { |level| [level.humanize, level] }, {}, class: "mt-1 w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white focus:border-navy-500 focus:ring-navy-500" %>
     </div>
   </div>
 
   <div>
     <%= f.label :summary, class: "block text-sm font-medium text-gray-300" %>
-    <%= f.text_area :summary, rows: 7, class: "mt-1 w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white focus:border-emerald-500 focus:ring-emerald-500" %>
+    <%= f.text_area :summary, rows: 7, class: "mt-1 w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white focus:border-navy-500 focus:ring-navy-500" %>
+  </div>
+
+  <div>
+    <%= f.label :body, class: "block text-sm font-medium text-gray-300" %>
+    <input id="educational_content_body" type="hidden" name="educational_content[body]" value="<%= content.body %>">
+    <trix-editor input="educational_content_body" class="rounded-lg border border-gray-700 bg-gray-950 text-white mt-1" style="min-height: 400px;"></trix-editor>
+  </div>
+
+  <div>
+    <%= f.label :excerpt, class: "block text-sm font-medium text-gray-300" %>
+    <%= f.text_area :excerpt, rows: 3, placeholder: "Short excerpt or preview", class: "mt-1 w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white focus:border-navy-500 focus:ring-navy-500" %>
   </div>
 
   <div class="grid gap-4 md:grid-cols-2">
     <div>
       <%= f.label :published_at, class: "block text-sm font-medium text-gray-300" %>
-      <%= f.datetime_field :published_at, class: "mt-1 w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white focus:border-emerald-500 focus:ring-emerald-500" %>
+      <%= f.datetime_field :published_at, class: "mt-1 w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white focus:border-navy-500 focus:ring-navy-500" %>
     </div>
     <label class="mt-7 flex items-center gap-2 text-sm font-medium text-gray-300">
-      <%= f.check_box :featured, class: "rounded border-gray-700 bg-gray-950 text-emerald-600 focus:ring-emerald-500" %>
+      <%= f.check_box :featured, class: "rounded border-gray-700 bg-gray-950 text-navy-600 focus:ring-navy-500" %>
       Featured lesson
     </label>
   </div>
 
   <div class="flex gap-3">
-    <%= f.submit class: "rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500" %>
+    <%= f.submit class: "rounded-lg bg-navy-600 px-4 py-2 text-sm font-semibold text-white hover:bg-navy-500" %>
     <%= link_to "Cancel", admin_educational_contents_path, class: "rounded-lg border border-gray-700 px-4 py-2 text-sm font-semibold text-gray-300 hover:bg-gray-800" %>
   </div>
 <% end %>
+
+<!-- Trix JS -->
+<script src="https://unpkg.com/trix@latest/dist/trix.umd.js"></script>
+
+<style>
+  trix-editor {
+    border: 1px solid #374151;
+    border-radius: 0.5rem;
+    background-color: #030712;
+    color: #ffffff;
+    padding: 0.75rem;
+  }
+  
+  trix-editor .trix-button-group {
+    background-color: #111827;
+    border-color: #374151;
+  }
+  
+  trix-editor .trix-button {
+    color: #d1d5db;
+  }
+  
+  trix-editor .trix-button--icon::before {
+    background-color: currentColor;
+  }
+</style>

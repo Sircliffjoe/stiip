@@ -1,3 +1,5 @@
-<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="256" cy="256" r="256" fill="red"/>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="NoraCapital">
+  <rect width="512" height="512" rx="112" fill="#001f3f"/>
+  <rect x="42" y="42" width="428" height="428" rx="84" fill="none" stroke="#d4af37" stroke-width="24"/>
+  <path d="M142 358V154h46l136 124V154h46v204h-42L188 230v128h-46z" fill="#d4af37"/>
 </svg>

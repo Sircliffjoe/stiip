@@ -1,6 +1,6 @@
 <div class="flex justify-between items-center mb-6">
   <h1 class="text-2xl font-bold text-white">Companies Directory</h1>
-  <%= link_to "Add Company", new_admin_company_path, class: "bg-purple-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-purple-700 transition" %>
+  <%= link_to "Add Company", new_admin_company_path, class: "bg-navy-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-navy-700 transition" %>
 </div>
 
 <div class="bg-gray-900 border border-gray-800 shadow overflow-hidden sm:rounded-lg border border-gray-800">
@@ -19,7 +19,7 @@
         <tr>
           <td class="px-6 py-4 whitespace-nowrap">
             <div class="flex items-center">
-              <div class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-md bg-purple-900/30 text-purple-400 border border-purple-800 font-bold">
+              <div class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-md bg-navy-900/30 text-navy-400 border border-navy-800 font-bold">
                 <%= company.ticker_symbol.first(2) %>
               </div>
               <div class="ml-4">
@@ -38,8 +38,8 @@
             <%= number_to_human(company.market_cap, units: { billion: "B", million: "M" }, format: "%n%u") || "N/A" %>
           </td>
           <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-            <%= link_to "View", admin_company_path(company), class: "text-blue-400 hover:text-blue-300 mr-3" %>
-            <%= link_to "Edit", edit_admin_company_path(company), class: "text-purple-600 hover:text-purple-300 mr-3" %>
+            <%= link_to "View", admin_company_path(company), class: "text-navy-400 hover:text-navy-300 mr-3" %>
+            <%= link_to "Edit", edit_admin_company_path(company), class: "text-navy-600 hover:text-navy-300 mr-3" %>
             <%= button_to "Delete", admin_company_path(company), method: :delete, class: "text-red-600 hover:text-red-900 inline-block", data: { turbo_confirm: "Are you sure?" } %>
           </td>
         </tr>
@@ -48,7 +48,7 @@
       <% if @companies.empty? %>
         <tr>
           <td colspan="5" class="px-6 py-8 text-center text-gray-400">
-            No companies found. <%= link_to "Add one now", new_admin_company_path, class: "text-purple-600 hover:underline" %>.
+            No companies found. <%= link_to "Add one now", new_admin_company_path, class: "text-navy-600 hover:underline" %>.
           </td>
         </tr>
       <% end %>

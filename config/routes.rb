@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  get "manifest.json" => "pwa#manifest", as: :pwa_manifest, defaults: { format: :json }
+  get "service-worker.js" => "pwa#service_worker", as: :pwa_service_worker, defaults: { format: :js }
+
+  get '/screener', to: 'screener#index'
   get "up" => "rails/health#show", as: :rails_health_check
 
   devise_for :users
@@ -69,6 +73,14 @@ Rails.application.routes.draw do
   get '/pricing', to: 'pricing#index'
   get '/market', to: 'market#index'
   get '/dashboard', to: 'dashboard#index'
+
+  # Static pages
+  get '/about', to: 'pages#about'
+  get '/features', to: 'pages#features'
+  get '/contact', to: 'pages#contact'
+  get '/terms', to: 'pages#terms'
+  get '/privacy', to: 'pages#privacy'
+  get '/disclaimer', to: 'pages#disclaimer'
 
   root "pages#home"
 end

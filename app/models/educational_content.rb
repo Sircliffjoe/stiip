@@ -13,7 +13,7 @@ class EducationalContent < ApplicationRecord
   validates :title, presence: true
   validates :slug, presence: true, uniqueness: true
 
-  before_validation :generate_slug, on: :create
+  before_validation :generate_slug
 
   scope :published, -> { where.not(published_at: nil).where("published_at <= ?", Time.current) }
   scope :featured, -> { where(featured: true) }
@@ -25,6 +25,16 @@ class EducationalContent < ApplicationRecord
   private
 
   def generate_slug
-    self.slug = title.parameterize if title.present? && slug.blank?
+    return if title.blank?
+    
+    # Always generate slug from title if blank
+    if slug.blank?
+      self.slug = title.parameterize
+    end
+    
+    # Ensure uniqueness by adding a suffix if needed
+    if slug.present? && EducationalContent.where(slug: slug).where.not(id: id).exists?
+      self.slug = "#{title.parameterize}-#{SecureRandom.hex(4)}"
+    end
   end
 end
