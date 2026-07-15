@@ -77,24 +77,7 @@
             </div>
 
             <div class="border-t border-gray-100 p-3">
-              <% if @user %>
-                <div class="mb-2 px-2">
-                  <p class="text-sm font-bold text-gray-900"><%= @user.full_name %></p>
-                  <p class="truncate text-xs text-gray-500"><%= @user.email %></p>
-                </div>
-                <div class="grid gap-1 text-sm font-medium text-gray-700">
-                  <a href="/profile" class="rounded-lg px-3 py-2 hover:bg-navy-50 hover:text-navy-700">Profile</a>
-                  <a href="/dashboard" class="rounded-lg px-3 py-2 hover:bg-navy-50 hover:text-navy-700">Dashboard</a>
-                  <% if @user.admin_role? || @user.analyst_role? %>
-                    <a href="/admin/dashboard" class="rounded-lg px-3 py-2 font-semibold text-navy-700 hover:bg-navy-50">Admin Dashboard</a>
-                  <% end %>
-                  <a href="/watchlists" class="rounded-lg px-3 py-2 hover:bg-navy-50 hover:text-navy-700">Watchlists</a>
-                  <a href="/api_keys" class="rounded-lg px-3 py-2 hover:bg-navy-50 hover:text-navy-700">API Access</a>
-                  <a href="/notifications" class="rounded-lg px-3 py-2 hover:bg-navy-50 hover:text-navy-700">Notifications</a>
-                  <a href="/settings" class="rounded-lg px-3 py-2 hover:bg-navy-50 hover:text-navy-700">Settings</a>
-                  <%= button_to "Sign out", "/users/sign_out", method: :delete, class: "mt-1 block w-full rounded-lg px-3 py-2 text-left text-sm font-semibold text-red-600 hover:bg-red-50" %>
-                </div>
-              <% else %>
+              <% unless @user %>
                 <div class="grid grid-cols-2 gap-2">
                   <a href="/users/sign_in" class="rounded-lg border border-gray-200 px-4 py-2.5 text-center text-sm font-bold text-gray-700 hover:bg-gray-50">Log in</a>
                   <a href="/users/sign_up" class="rounded-lg bg-navy-700 px-4 py-2.5 text-center text-sm font-bold text-white hover:bg-navy-800">Sign up</a>
