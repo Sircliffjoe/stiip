@@ -1,0 +1,21 @@
+<div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+  <h3 class="text-sm font-bold uppercase tracking-wide text-gray-500"><%= title %></h3>
+
+  <% if rows.present? %>
+    <div class="mt-4 space-y-3">
+      <% rows.each do |row| %>
+        <%= link_to company_path(row[:company].ticker_symbol), class: "flex items-center justify-between gap-3 rounded-lg border border-gray-100 bg-gray-50 px-3 py-2 hover:border-navy-200" do %>
+          <div>
+            <p class="font-bold text-gray-900"><%= row[:company].ticker_symbol %></p>
+            <p class="text-xs text-gray-500"><%= row[:company].name %></p>
+          </div>
+          <p class="shrink-0 text-sm font-black text-navy-700">
+            <%= row[value_key].present? ? "#{row[value_key]}#{value_suffix}" : "N/A" %>
+          </p>
+        <% end %>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="mt-4 text-sm text-gray-500">Not enough dividend history yet.</p>
+  <% end %>
+</div>

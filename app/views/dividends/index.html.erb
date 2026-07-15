@@ -1,66 +1,98 @@
 <div class="space-y-6">
   <div>
-    <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Dividend Calendar</h1>
-    <p class="mt-2 text-gray-600 font-light max-w-2xl">Track upcoming dividend payments, qualification dates, and historical yields to maximize your passive income.</p>
+    <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Dividend Intelligence</h1>
+    <p class="mt-2 text-gray-600 font-light max-w-3xl">Review historical payouts, spot consistent dividend companies, and track future announced payments when they become available.</p>
   </div>
 
   <div class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden p-6">
-    <h2 class="text-xl font-bold text-gray-900 mb-6">Upcoming Dividends</h2>
-
     <% if @login_required %>
       <%= render "shared/locked_feature",
         title: "Log in to view dividend details",
-        message: "You must be logged in to access dividend amounts, qualification dates, and payment dates.",
+        message: "You must be logged in to access dividend amounts, qualification dates, payment dates, and dividend history.",
         cta_label: "Log in",
         cta_path: new_user_session_path,
         secondary_label: "Create free account",
         secondary_path: new_user_registration_path %>
-    <% elsif @premium_required %>
-      <div class="mb-6">
-        <%= render "shared/locked_feature",
-          title: "Upgrade for advanced dividend analytics",
-          message: "Free users can view the basic dividend calendar. Premium unlocks full dividend history, yield rankings, and advanced analytics.",
-          cta_label: "Upgrade to Premium",
-          cta_path: pricing_path,
-          secondary_label: nil %>
-      </div>
-    <% end %>
-    
-    <% if !@login_required && @dividends.any? %>
-      <div class="space-y-4">
-        <% @dividends.each do |dividend| %>
-          <% company = dividend.company %>
-          <%= link_to company_path(company.ticker_symbol), class: "flex flex-col sm:flex-row items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:border-navy-300 transition-all" do %>
-            <div class="flex items-center gap-4 w-full sm:w-auto mb-4 sm:mb-0">
-              <div class="w-12 h-12 rounded-full bg-navy-700 flex items-center justify-center text-white font-bold text-sm">
-                <%= company.ticker_symbol.first(2) %>
-              </div>
-              <div>
-                <p class="font-bold text-gray-900 text-lg"><%= company.ticker_symbol %></p>
-                <p class="text-sm text-gray-600"><%= company.name %></p>
-              </div>
+    <% else %>
+      <% if @premium_required %>
+        <div class="mb-6">
+          <%= render "shared/locked_feature",
+            title: "Upgrade for dividend analytics",
+            message: "Free users can view a limited dividend history. Premium unlocks dividend yield analysis, growth rankings, and consistency signals.",
+            cta_label: "Upgrade to Premium",
+            cta_path: pricing_path,
+            secondary_label: nil %>
+        </div>
+      <% elsif @dividend_analytics.present? %>
+        <div class="mb-8 grid grid-cols-1 gap-4 md:grid-cols-4">
+          <div class="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <p class="text-xs font-semibold uppercase text-gray-500">Companies</p>
+            <p class="mt-2 text-2xl font-black text-gray-900"><%= number_with_delimiter(@dividend_analytics[:companies_count]) %></p>
+          </div>
+          <div class="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <p class="text-xs font-semibold uppercase text-gray-500">Dividend Records</p>
+            <p class="mt-2 text-2xl font-black text-gray-900"><%= number_with_delimiter(@dividend_analytics[:records_count]) %></p>
+          </div>
+          <div class="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <p class="text-xs font-semibold uppercase text-gray-500">Recorded Payouts</p>
+            <p class="mt-2 text-2xl font-black text-gray-900"><%= number_to_currency(@dividend_analytics[:total_declared], unit: "₦") %></p>
+          </div>
+          <div class="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <p class="text-xs font-semibold uppercase text-gray-500">Avg Latest Yield</p>
+            <p class="mt-2 text-2xl font-black text-gray-900"><%= @dividend_analytics[:average_yield].present? ? "#{@dividend_analytics[:average_yield]}%" : "N/A" %></p>
+          </div>
+        </div>
+
+        <div class="mb-8 grid grid-cols-1 gap-4 lg:grid-cols-3">
+          <%= render "dividend_analysis_panel", title: "Highest Latest Yield", rows: @dividend_analytics[:top_yields], value_key: :latest_yield_percent, value_suffix: "%" %>
+          <%= render "dividend_analysis_panel", title: "Strongest Payout Growth", rows: @dividend_analytics[:strongest_growth], value_key: :growth_percent, value_suffix: "%" %>
+          <%= render "dividend_analysis_panel", title: "Most Consistent Payers", rows: @dividend_analytics[:most_consistent], value_key: :years_paid, value_suffix: " yrs" %>
+        </div>
+      <% end %>
+
+      <div data-controller="tabs">
+        <div class="mb-6 flex flex-wrap gap-2 border-b border-gray-200">
+          <button data-tabs-target="tab" data-action="tabs#switch" class="border-b-2 border-transparent px-4 py-3 text-sm font-bold text-gray-500 transition hover:text-navy-700">
+            Historical Dividends
+          </button>
+          <button data-tabs-target="tab" data-action="tabs#switch" class="border-b-2 border-transparent px-4 py-3 text-sm font-bold text-gray-500 transition hover:text-navy-700">
+            Upcoming Dividends
+          </button>
+        </div>
+
+        <div data-tabs-target="panel">
+          <div class="mb-4">
+            <h2 class="text-xl font-bold text-gray-900">Historical Dividends</h2>
+            <p class="mt-1 text-sm text-gray-500">Past payouts imported from EODHD or entered manually by admins.</p>
+          </div>
+
+          <% if @historical_dividends.any? %>
+            <div class="space-y-4">
+              <% @historical_dividends.each do |dividend| %>
+                <%= render "dividend_row", dividend: dividend, date_label: "Paid / Qualified" %>
+              <% end %>
             </div>
-            
-            <div class="flex flex-col sm:flex-row gap-6 sm:gap-12 w-full sm:w-auto items-start sm:items-center">
-              <div>
-                <p class="text-xs font-semibold text-gray-500 uppercase">Amount</p>
-                <p class="font-bold text-gray-900 text-lg"><%= number_to_currency(dividend.amount, unit: "₦") %> <span class="text-xs font-normal text-gray-600">/ share</span></p>
-              </div>
-              <div>
-                <p class="text-xs font-semibold text-gray-500 uppercase">Qualifies By</p>
-                <p class="font-medium text-gray-900"><%= dividend.qualification_date&.strftime("%b %d, %Y") %></p>
-              </div>
-              <div>
-                <p class="text-xs font-semibold text-gray-500 uppercase">Payment Date</p>
-                <p class="font-bold text-navy-600"><%= dividend.payment_date&.strftime("%b %d, %Y") %></p>
-              </div>
-            </div>
+          <% else %>
+            <%= render "dividend_empty_state", message: "No historical dividends are available yet. Sync EODHD dividends or add records from the admin dashboard." %>
           <% end %>
-        <% end %>
-      </div>
-    <% elsif !@login_required %>
-      <div class="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-6 text-center text-sm text-gray-500">
-        No verified dividend feed is connected yet. Dividend records will appear here once imported from a licensed dividend/corporate-actions source.
+        </div>
+
+        <div data-tabs-target="panel" class="hidden">
+          <div class="mb-4">
+            <h2 class="text-xl font-bold text-gray-900">Upcoming Dividends</h2>
+            <p class="mt-1 text-sm text-gray-500">Future announced qualification and payment dates will appear here when available from API feeds or admin entry.</p>
+          </div>
+
+          <% if @upcoming_dividends.any? %>
+            <div class="space-y-4">
+              <% @upcoming_dividends.each do |dividend| %>
+                <%= render "dividend_row", dividend: dividend, date_label: "Expected Payment" %>
+              <% end %>
+            </div>
+          <% else %>
+            <%= render "dividend_empty_state", message: "No upcoming dividend announcements are available yet." %>
+          <% end %>
+        </div>
       </div>
     <% end %>
   </div>
