@@ -437,6 +437,28 @@ RSpec.describe DataIngestion::Providers::CompositeMarketProvider, type: :service
       expect(result.first[:close]).to eq(94)
     end
   end
+
+  describe "#fetch_news" do
+    it "uses providers that are available even when other providers are unavailable" do
+      provider = described_class.new(providers: [
+        Class.new do
+          def fetch_news(limit:)
+            raise "provider missing credentials"
+          end
+        end.new,
+        Class.new do
+          def fetch_news(limit:)
+            [{ title: "Live Market News", url: "https://example.com/news" }]
+          end
+        end.new
+      ])
+
+      result = provider.fetch_news(limit: 5)
+
+      expect(result.length).to eq(1)
+      expect(result.first[:title]).to eq("Live Market News")
+    end
+  end
 end
 
 RSpec.describe DataIngestion::Providers::EodhdProvider, type: :service do
@@ -480,6 +502,67 @@ RSpec.describe DataIngestion::Providers::EodhdProvider, type: :service do
         currency: "NGN"
       )
       expect(result.second[:interim]).to be true
+    end
+
+    it "tries configured exchange code fallbacks until dividends are found" do
+      sector = Sector.create!(name: "Financial Services")
+      Company.create!(name: "GTCO PLC", ticker_symbol: "GTCO", sector: sector)
+      provider = described_class.new(api_key: "test-key", exchange_codes: "BAD,XNSA")
+
+      allow(provider).to receive(:get_json).with(
+        "/div/GTCO.BAD",
+        from: "2026-01-01",
+        to: "2026-12-31"
+      ).and_return([])
+      allow(provider).to receive(:get_json).with(
+        "/div/GTCO.XNSA",
+        from: "2026-01-01",
+        to: "2026-12-31"
+      ).and_return([
+        {
+          "date" => "2026-03-24",
+          "recordDate" => "2026-03-25",
+          "paymentDate" => "2026-04-15",
+          "value" => 4.0,
+          "currency" => "NGN"
+        }
+      ])
+
+      result = provider.fetch_dividends(start_date: Date.new(2026, 1, 1), end_date: Date.new(2026, 12, 31))
+
+      expect(result.length).to eq(1)
+      expect(result.first[:amount]).to eq(4.0)
+    end
+  end
+
+  describe "#fetch_news" do
+    it "normalizes EODHD financial news" do
+      allow(provider).to receive(:news_tags).and_return(["NIGERIA"])
+      allow(provider).to receive(:news_symbol_limit).and_return(0)
+      allow(provider).to receive(:get_json).with(
+        "/news",
+        { t: "NIGERIA", limit: 10, offset: 0 }
+      ).and_return([
+        {
+          "date" => "2026-07-15T10:00:00+00:00",
+          "title" => "Nigeria inflation cools as equities rally",
+          "content" => "Financial markets update for Nigerian investors.",
+          "link" => "https://reliable.example/news/nigeria-inflation-equities",
+          "symbols" => ["GTCO.XNSA", "UBA.XNSA"]
+        }
+      ])
+
+      result = provider.fetch_news(limit: 10)
+
+      expect(result.length).to eq(1)
+      expect(result.first).to include(
+        title: "Nigeria inflation cools as equities rally",
+        content: "Financial markets update for Nigerian investors.",
+        source: "reliable.example",
+        url: "https://reliable.example/news/nigeria-inflation-equities",
+        related_tickers: ["GTCO", "UBA"]
+      )
+      expect(result.first[:published_at]).to be_a(Time)
     end
   end
 end

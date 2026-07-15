@@ -777,7 +777,8 @@ CREATE TABLE public.subscriptions (
     expires_at timestamp(6) without time zone,
     payment_reference character varying,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    renewal_reminded_at timestamp(6) without time zone
 );
 
 
@@ -1683,6 +1684,13 @@ CREATE UNIQUE INDEX index_stock_prices_on_company_id_and_date ON public.stock_pr
 
 
 --
+-- Name: index_subscriptions_on_renewal_reminded_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_subscriptions_on_renewal_reminded_at ON public.subscriptions USING btree (renewal_reminded_at);
+
+
+--
 -- Name: index_subscriptions_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1957,6 +1965,7 @@ ALTER TABLE ONLY public.company_news
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260715193000'),
 ('20260714224500'),
 ('20260714162514'),
 ('20260525'),

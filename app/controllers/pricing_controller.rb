@@ -67,9 +67,7 @@ class PricingController < ApplicationController
     amount = plan == "business_api" ? 25_000 : 2_500
 
     if Rails.env.development? || Rails.env.test?
-      current_user.update!(role: plan) unless current_user.admin_role? || current_user.analyst_role?
-      subscription = current_user.subscription || current_user.build_subscription
-      subscription.update!(plan: plan, status: :active, starts_at: Time.current, expires_at: 1.month.from_now)
+      Subscriptions::Activate.new(user: current_user, plan: plan, payment_reference: "SIM-#{SecureRandom.hex(8)}").call
       redirect_to profile_path, notice: "#{plan.titleize} subscription activated successfully (Simulation)!"
       return
     end
@@ -83,7 +81,8 @@ class PricingController < ApplicationController
         metadata: {
           user_id: current_user.id,
           plan: plan
-        }
+        },
+        callback_url: callback_pricing_index_url
       )
 
       Rails.logger.info("Paystack Response: #{paystack_response.inspect}")
@@ -99,5 +98,29 @@ class PricingController < ApplicationController
       Rails.logger.error("Paystack Exception: #{e.message}\n#{e.backtrace.join("\n")}")
       redirect_to pricing_path, alert: "Payment error: #{e.message}"
     end
+  end
+
+  def callback
+    reference = params[:reference].to_s
+    redirect_to pricing_path, alert: "Missing payment reference." and return if reference.blank?
+
+    verify_response = PaystackService.verify_payment(reference)
+    data = verify_response["data"] || {}
+
+    unless verify_response["status"] && data["status"] == "success"
+      redirect_to pricing_path, alert: verify_response["message"].presence || "Payment could not be verified."
+      return
+    end
+
+    user = User.find(data.dig("metadata", "user_id"))
+    plan = data.dig("metadata", "plan")
+
+    Subscriptions::Activate.new(user: user, plan: plan, payment_reference: reference).call
+    redirect_to profile_path, notice: "#{plan.to_s.titleize} subscription activated successfully!"
+  rescue ActiveRecord::RecordNotFound
+    redirect_to pricing_path, alert: "Payment verified, but the matching user could not be found. Please contact support."
+  rescue StandardError => e
+    Rails.logger.error("Payment callback failed: #{e.class} - #{e.message}")
+    redirect_to pricing_path, alert: "Payment verification failed. Please contact support if you were debited."
   end
 end

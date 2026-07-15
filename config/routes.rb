@@ -25,6 +25,7 @@ Rails.application.routes.draw do
   resources :pricing, only: [:index] do
     collection do
       post :checkout
+      get :callback
     end
   end
 

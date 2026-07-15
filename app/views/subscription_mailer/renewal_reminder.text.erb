@@ -1,0 +1,5 @@
+Hello <%= @user.first_name %>,
+
+Your NoraCapital <%= @subscription.plan.titleize %> subscription is due for renewal on <%= @subscription.expires_at.strftime("%B %d, %Y") %>.
+
+No action is needed if your payment method remains valid.

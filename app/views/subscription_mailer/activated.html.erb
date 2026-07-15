@@ -1,0 +1,12 @@
+<h1>Your subscription is active</h1>
+
+<p>Hello <%= @user.first_name %>,</p>
+
+<p>Your NoraCapital <strong><%= @subscription.plan.titleize %></strong> subscription is now active.</p>
+
+<p>
+  Access starts on <%= @subscription.starts_at&.strftime("%B %d, %Y") || "today" %>
+  and runs until <%= @subscription.expires_at&.strftime("%B %d, %Y") || "your next billing date" %>.
+</p>
+
+<p>You can manage your account from your dashboard.</p>

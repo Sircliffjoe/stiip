@@ -1,0 +1,10 @@
+<h1>Your subscription renews soon</h1>
+
+<p>Hello <%= @user.first_name %>,</p>
+
+<p>
+  Your NoraCapital <strong><%= @subscription.plan.titleize %></strong> subscription is due for renewal on
+  <strong><%= @subscription.expires_at.strftime("%B %d, %Y") %></strong>.
+</p>
+
+<p>No action is needed if your payment method remains valid.</p>

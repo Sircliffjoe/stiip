@@ -29,10 +29,15 @@ module DataIngestion
 
       def default_providers
         [
-          Providers::NgnMarketProvider.new,
-          Providers::EodhdProvider.new,
-          Providers::NgxProvider.new
-        ]
+          -> { Providers::NgnMarketProvider.new },
+          -> { Providers::EodhdProvider.new },
+          -> { Providers::NgxProvider.new }
+        ].filter_map do |factory|
+          factory.call
+        rescue StandardError => e
+          Rails.logger.warn("[CompositeMarketProvider] Provider unavailable: #{e.message}")
+          nil
+        end
       end
 
       def fetch_from_providers(method_name, *args, **kwargs)

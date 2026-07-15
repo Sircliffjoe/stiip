@@ -71,6 +71,31 @@ dokku config:set noracapital \
 
 Make sure the sender domain/email is verified in Brevo before sending password reset, confirmation, or account emails.
 
+## Market Data, News, and Dividends
+
+NoraCapital uses provider classes under `app/services/data_ingestion/providers`. For production, configure at least EODHD:
+
+```bash
+EODHD_API_KEY=<your_eodhd_api_key>
+EODHD_EXCHANGE_CODE=XNSA
+EODHD_NEWS_TAGS=NIGERIA,ECONOMY,FINANCIAL MARKETS,INVESTMENT,BANKING
+EODHD_NEWS_SYMBOL_LIMIT=10
+SOLID_QUEUE_IN_PUMA=1
+```
+
+If EODHD uses a different suffix for Nigerian equities on your plan, provide fallbacks:
+
+```bash
+EODHD_EXCHANGE_CODES=XNSA,LAG,NSE
+```
+
+Production sync commands:
+
+```bash
+bin/rails runner 'SyncNewsJob.perform_now("market")'
+bin/rails runner 'SyncDividendsJob.perform_now("eodhd")'
+```
+
 ## Deployment
 
 Deployed via Coolify on VPS. See deployment documentation for details.

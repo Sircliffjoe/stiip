@@ -29,6 +29,12 @@ production:
     schedule: "every weekday at 6:30pm"
     description: "Generate watchlist-based alerts after price sync"
 
+  subscription_renewal_reminders:
+    class: SubscriptionRenewalReminderJob
+    queue: default
+    schedule: "every day at 9am"
+    description: "Email paid users one month before subscription expiration"
+
 development:
   sync_stock_prices:
     class: SyncPricesJob

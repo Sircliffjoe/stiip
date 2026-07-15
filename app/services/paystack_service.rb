@@ -6,7 +6,7 @@ class PaystackService
   BASE_URL = "https://api.paystack.co"
   SECRET_KEY = ENV.fetch("PAYSTACK_SECRET_KEY", "")
 
-  def self.initialize_payment(email:, amount:, reference:, metadata: {})
+  def self.initialize_payment(email:, amount:, reference:, metadata: {}, callback_url: nil)
     raise "PAYSTACK_SECRET_KEY not configured" if SECRET_KEY.blank?
 
     uri = URI("#{BASE_URL}/transaction/initialize")
@@ -18,12 +18,15 @@ class PaystackService
     request = Net::HTTP::Post.new(uri)
     request["Authorization"] = "Bearer #{SECRET_KEY}"
     request["Content-Type"] = "application/json"
-    request.body = JSON.generate({
+    payload = {
       email: email,
       amount: amount,
       reference: reference,
       metadata: metadata
-    })
+    }
+    payload[:callback_url] = callback_url if callback_url.present?
+
+    request.body = JSON.generate(payload)
 
     response = http.request(request)
     JSON.parse(response.body)

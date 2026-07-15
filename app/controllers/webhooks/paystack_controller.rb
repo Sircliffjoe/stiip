@@ -12,35 +12,15 @@ module Webhooks
         payment_reference = reference
         verify_response = PaystackService.verify_payment(payment_reference)
 
-        if verify_response[:status] && verify_response[:data][:status] == "success"
-          user_id = verify_response.dig(:data, :metadata, :user_id)
+        if verify_response["status"] && verify_response.dig("data", "status") == "success"
+          user_id = verify_response.dig("data", "metadata", "user_id")
           user = User.find(user_id)
 
           # Create or update subscription
-          plan = verify_response.dig(:data, :metadata, :plan) ||
-            verify_response.dig("data", "metadata", "plan") ||
-            "premium"
+          plan = verify_response.dig("data", "metadata", "plan") || "premium"
           plan = plan.to_s.presence_in(%w[premium business_api]) || "premium"
 
-          subscription = user.subscription || user.build_subscription
-          subscription.update!(
-            status: :active,
-            plan: plan,
-            payment_reference: payment_reference,
-            starts_at: Time.current,
-            expires_at: 1.month.from_now
-          )
-
-          # Update user role
-          user.update!(role: subscription.plan)
-
-          # Create notification
-          Notification.create!(
-            user: user,
-            title: "Welcome to #{subscription.plan.titleize}!",
-            body: "Your payment was successful. Your #{subscription.plan.titleize} access is now active.",
-            notification_type: "success"
-          )
+          Subscriptions::Activate.new(user: user, plan: plan, payment_reference: payment_reference).call
         end
       end
 
