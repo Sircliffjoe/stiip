@@ -3,7 +3,7 @@
     <div class="flex items-center justify-between h-16">
       <div class="flex items-center">
         <a href="/" class="flex items-center gap-2.5 group">
-          <img src="/logo.png" alt="NoraCapital" class="h-20 w-auto max-w-[180px] object-contain">
+          <img src="/logo.png" alt="NoraCapital" class="h-16 w-auto max-w-[210px] object-contain sm:h-20">
         </a>
       </div>
       
@@ -17,7 +17,7 @@
         <a href="/pricing" class="text-gray-600 hover:text-navy-600 transition-colors duration-200">Pricing</a>
       </div>
       
-      <div class="flex items-center gap-4">
+      <div class="flex items-center gap-3">
         <div class="hidden lg:block w-48">
           <%= render SearchBar::Component.new %>
         </div>
@@ -47,9 +47,62 @@
             </div>
           </details>
         <% else %>
-          <a href="/users/sign_in" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Log in</a>
-          <a href="/users/sign_up" class="text-sm font-bold bg-navy-700 text-white px-4 py-2 rounded-lg shadow-md hover:shadow-lg hover:shadow-navy-900/20 hover:-translate-y-0.5 transition-all">Sign up</a>
+          <a href="/users/sign_in" class="hidden text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 sm:inline">Log in</a>
+          <a href="/users/sign_up" class="hidden rounded-lg bg-navy-700 px-4 py-2 text-sm font-bold text-white shadow-md transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-navy-900/20 sm:inline">Sign up</a>
         <% end %>
+
+        <details class="group relative md:hidden">
+          <summary class="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-lg border border-gray-200 bg-white text-navy-900 shadow-sm transition hover:border-navy-300 hover:bg-navy-50 [&::-webkit-details-marker]:hidden" aria-label="Open menu">
+            <svg class="h-6 w-6 group-open:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16" />
+            </svg>
+            <svg class="hidden h-6 w-6 group-open:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6L6 18" />
+            </svg>
+          </summary>
+
+          <div class="absolute right-0 z-50 mt-3 w-[min(92vw,22rem)] overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl">
+            <div class="border-b border-gray-100 p-4">
+              <%= render SearchBar::Component.new %>
+            </div>
+
+            <div class="grid gap-1 p-2 text-sm font-semibold text-gray-700">
+              <a href="/market" class="rounded-lg px-3 py-2.5 hover:bg-navy-50 hover:text-navy-700">Market</a>
+              <a href="/companies" class="rounded-lg px-3 py-2.5 hover:bg-navy-50 hover:text-navy-700">Companies</a>
+              <a href="/screener" class="rounded-lg px-3 py-2.5 hover:bg-navy-50 hover:text-navy-700">Screener</a>
+              <a href="/dividends" class="rounded-lg px-3 py-2.5 hover:bg-navy-50 hover:text-navy-700">Dividends</a>
+              <a href="/news" class="rounded-lg px-3 py-2.5 hover:bg-navy-50 hover:text-navy-700">News</a>
+              <a href="/learn" class="rounded-lg px-3 py-2.5 hover:bg-navy-50 hover:text-navy-700">Learn</a>
+              <a href="/pricing" class="rounded-lg px-3 py-2.5 hover:bg-navy-50 hover:text-navy-700">Pricing</a>
+            </div>
+
+            <div class="border-t border-gray-100 p-3">
+              <% if @user %>
+                <div class="mb-2 px-2">
+                  <p class="text-sm font-bold text-gray-900"><%= @user.full_name %></p>
+                  <p class="truncate text-xs text-gray-500"><%= @user.email %></p>
+                </div>
+                <div class="grid gap-1 text-sm font-medium text-gray-700">
+                  <a href="/profile" class="rounded-lg px-3 py-2 hover:bg-navy-50 hover:text-navy-700">Profile</a>
+                  <a href="/dashboard" class="rounded-lg px-3 py-2 hover:bg-navy-50 hover:text-navy-700">Dashboard</a>
+                  <% if @user.admin_role? || @user.analyst_role? %>
+                    <a href="/admin/dashboard" class="rounded-lg px-3 py-2 font-semibold text-navy-700 hover:bg-navy-50">Admin Dashboard</a>
+                  <% end %>
+                  <a href="/watchlists" class="rounded-lg px-3 py-2 hover:bg-navy-50 hover:text-navy-700">Watchlists</a>
+                  <a href="/api_keys" class="rounded-lg px-3 py-2 hover:bg-navy-50 hover:text-navy-700">API Access</a>
+                  <a href="/notifications" class="rounded-lg px-3 py-2 hover:bg-navy-50 hover:text-navy-700">Notifications</a>
+                  <a href="/settings" class="rounded-lg px-3 py-2 hover:bg-navy-50 hover:text-navy-700">Settings</a>
+                  <%= button_to "Sign out", "/users/sign_out", method: :delete, class: "mt-1 block w-full rounded-lg px-3 py-2 text-left text-sm font-semibold text-red-600 hover:bg-red-50" %>
+                </div>
+              <% else %>
+                <div class="grid grid-cols-2 gap-2">
+                  <a href="/users/sign_in" class="rounded-lg border border-gray-200 px-4 py-2.5 text-center text-sm font-bold text-gray-700 hover:bg-gray-50">Log in</a>
+                  <a href="/users/sign_up" class="rounded-lg bg-navy-700 px-4 py-2.5 text-center text-sm font-bold text-white hover:bg-navy-800">Sign up</a>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </details>
       </div>
     </div>
   </div>
