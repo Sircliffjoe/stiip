@@ -1,0 +1,41 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <%= link_to "Records Console", admin_records_path, class: "text-sm text-navy-300 hover:text-navy-200" %>
+      <h1 class="mt-2 text-2xl font-bold text-white"><%= @model_class.model_name.human(count: 2) %></h1>
+      <p class="mt-1 text-sm text-gray-400">Showing up to 100 most recent records.</p>
+    </div>
+    <%= link_to "New #{model_label}", admin_new_record_path(model: model_param), class: "rounded-lg bg-navy-600 px-4 py-2 text-sm font-semibold text-white hover:bg-navy-700" %>
+  </div>
+
+  <div class="overflow-x-auto rounded-lg border border-gray-800 bg-gray-900">
+    <table class="min-w-full divide-y divide-gray-800">
+      <thead class="bg-gray-950">
+        <tr>
+          <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-400">ID</th>
+          <% @model_class.column_names.first(5).each do |column| %>
+            <% next if column == "id" %>
+            <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-400"><%= column.humanize %></th>
+          <% end %>
+          <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-400">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-800">
+        <% @records.each do |record| %>
+          <tr>
+            <td class="max-w-xs truncate px-4 py-3 text-xs font-mono text-gray-300"><%= record.id %></td>
+            <% @model_class.column_names.first(5).each do |column| %>
+              <% next if column == "id" %>
+              <td class="max-w-xs truncate px-4 py-3 text-sm text-gray-300"><%= display_value(record, column) %></td>
+            <% end %>
+            <td class="whitespace-nowrap px-4 py-3 text-right text-sm">
+              <%= link_to "View", admin_record_path(model: model_param, id: record.id), class: "text-navy-300 hover:text-navy-200" %>
+              <%= link_to "Edit", admin_edit_record_path(model: model_param, id: record.id), class: "ml-3 text-navy-300 hover:text-navy-200" %>
+              <%= button_to "Delete", admin_record_path(model: model_param, id: record.id), method: :delete, class: "ml-3 inline text-red-300 hover:text-red-200", form_class: "inline", form: { data: { turbo_confirm: "Delete this #{model_label}?" } } %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

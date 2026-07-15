@@ -3,6 +3,11 @@ class WatchlistItemsController < ApplicationController
   before_action :set_watchlist
 
   def create
+    unless current_access_policy.can_add_watchlist_item?
+      redirect_to @watchlist, alert: "Free users can track up to 5 stocks. Upgrade to Premium for unlimited watchlist stocks."
+      return
+    end
+
     company = Company.find(params[:company_id])
     item = @watchlist.watchlist_items.build(company: company)
 

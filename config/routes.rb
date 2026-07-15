@@ -19,6 +19,7 @@ Rails.application.routes.draw do
       patch :mark_all_read
     end
   end
+  resources :api_keys, only: [:index, :create, :destroy]
 
   # Pricing & Subscriptions
   resources :pricing, only: [:index] do
@@ -29,6 +30,15 @@ Rails.application.routes.draw do
 
   namespace :admin do
     get 'dashboard', to: 'dashboard#index'
+    get 'records', to: 'records#index', as: :records
+    get 'records/:model', to: 'records#model_index', as: :records_model
+    post 'records/:model', to: 'records#create'
+    get 'records/:model/new', to: 'records#new', as: :new_record
+    get 'records/:model/:id', to: 'records#show', as: :record
+    get 'records/:model/:id/edit', to: 'records#edit', as: :edit_record
+    patch 'records/:model/:id', to: 'records#update'
+    put 'records/:model/:id', to: 'records#update'
+    delete 'records/:model/:id', to: 'records#destroy'
     resources :users
     resources :companies
     resources :subscriptions
@@ -69,6 +79,8 @@ Rails.application.routes.draw do
 
   get '/profile', to: 'profiles#show'
   get '/settings', to: 'profiles#edit'
+  patch '/settings', to: 'profiles#update'
+  put '/settings', to: 'profiles#update'
   get '/search', to: 'search#index'
   get '/pricing', to: 'pricing#index'
   get '/market', to: 'market#index'

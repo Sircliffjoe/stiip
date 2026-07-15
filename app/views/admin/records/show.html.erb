@@ -1,0 +1,20 @@
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <%= link_to @model_class.model_name.human(count: 2), admin_records_model_path(model: model_param), class: "text-sm text-navy-300 hover:text-navy-200" %>
+      <h1 class="mt-2 text-2xl font-bold text-white"><%= model_label %></h1>
+    </div>
+    <%= link_to "Edit", admin_edit_record_path(model: model_param, id: @record.id), class: "rounded-lg bg-navy-600 px-4 py-2 text-sm font-semibold text-white hover:bg-navy-700" %>
+  </div>
+
+  <div class="rounded-lg border border-gray-800 bg-gray-900">
+    <dl class="divide-y divide-gray-800">
+      <% @model_class.column_names.each do |column| %>
+        <div class="grid gap-3 px-5 py-4 md:grid-cols-4">
+          <dt class="text-sm font-semibold text-gray-400"><%= column.humanize %></dt>
+          <dd class="break-words text-sm text-gray-100 md:col-span-3"><%= display_value(@record, column) %></dd>
+        </div>
+      <% end %>
+    </dl>
+  </div>
+</div>

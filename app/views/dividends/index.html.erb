@@ -6,8 +6,27 @@
 
   <div class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden p-6">
     <h2 class="text-xl font-bold text-gray-900 mb-6">Upcoming Dividends</h2>
+
+    <% if @login_required %>
+      <%= render "shared/locked_feature",
+        title: "Log in to view dividend details",
+        message: "You must be logged in to access dividend amounts, qualification dates, and payment dates.",
+        cta_label: "Log in",
+        cta_path: new_user_session_path,
+        secondary_label: "Create free account",
+        secondary_path: new_user_registration_path %>
+    <% elsif @premium_required %>
+      <div class="mb-6">
+        <%= render "shared/locked_feature",
+          title: "Upgrade for advanced dividend analytics",
+          message: "Free users can view the basic dividend calendar. Premium unlocks full dividend history, yield rankings, and advanced analytics.",
+          cta_label: "Upgrade to Premium",
+          cta_path: pricing_path,
+          secondary_label: nil %>
+      </div>
+    <% end %>
     
-    <% if @dividends.any? %>
+    <% if !@login_required && @dividends.any? %>
       <div class="space-y-4">
         <% @dividends.each do |dividend| %>
           <% company = dividend.company %>
@@ -39,7 +58,7 @@
           <% end %>
         <% end %>
       </div>
-    <% else %>
+    <% elsif !@login_required %>
       <div class="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-6 text-center text-sm text-gray-500">
         No verified dividend feed is connected yet. Dividend records will appear here once imported from a licensed dividend/corporate-actions source.
       </div>

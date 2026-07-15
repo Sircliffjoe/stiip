@@ -8,21 +8,23 @@ module Subscriptions
       email = @payload.dig('customer', 'email')
       user = User.find_by(email: email)
       return unless user
+      plan = (@payload.dig('metadata', 'plan') || @payload.dig(:metadata, :plan)).to_s.presence_in(%w[premium business_api]) || 'premium'
 
       subscription = user.subscription || user.build_subscription
       subscription.update!(
         status: :active,
-        plan: :premium,
+        plan: plan,
+        starts_at: Time.current,
         expires_at: 1.month.from_now
       )
       
-      user.premium_role!
+      user.update!(role: plan)
       
       # Notify user
       Notifications::Create.new(
         user: user,
         title: "Payment Successful",
-        message: "You are now a Premium subscriber!",
+        message: "You are now a #{plan.titleize} subscriber!",
         type: "success"
       ).call
     end

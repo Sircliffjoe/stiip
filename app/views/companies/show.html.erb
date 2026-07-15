@@ -50,6 +50,15 @@
     </div>
   </div>
 
+  <% if @login_required %>
+    <%= render "shared/locked_feature",
+      title: "Log in to view company intelligence",
+      message: "You must be logged in to access price history, dividend history, and plain-English company analysis.",
+      cta_label: "Log in",
+      cta_path: new_user_session_path,
+      secondary_label: "Create free account",
+      secondary_path: new_user_registration_path %>
+  <% else %>
   <!-- AI Explanation Card -->
   <div class="bg-navy-50 border border-navy-200 rounded-2xl p-6 flex gap-4 items-start relative overflow-hidden group">
     <div class="absolute inset-0 bg-navy-100/30 group-hover:bg-navy-100/50 transition-colors"></div>
@@ -112,4 +121,5 @@
       </div>
     <% end %>
   </div>
+  <% end %>
 </div>

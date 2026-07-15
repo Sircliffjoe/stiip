@@ -3,7 +3,9 @@ require 'rails_helper'
 RSpec.describe "Api::V1::Dividends", type: :request do
   let!(:company) { Company.create!(name: "Test Company", ticker_symbol: "TEST", sector: Sector.find_or_create_by!(name: "Banking", slug: "banking")) }
   let!(:dividend) { Dividend.create!(company: company, amount: 2.50, year: 2026, status: :announced) }
-  let(:headers) { { 'Authorization' => 'Bearer test_token' } }
+  let(:api_user) { User.create!(email: "api-dividends@example.com", password: "password", first_name: "API", last_name: "User", confirmed_at: Time.current, role: :business_api) }
+  let(:api_key) { api_user.api_keys.create!(name: "RSpec") }
+  let(:headers) { { 'Authorization' => "Bearer #{api_key.plain_token}" } }
 
   describe "GET /api/v1/dividends" do
     it "returns all dividends" do

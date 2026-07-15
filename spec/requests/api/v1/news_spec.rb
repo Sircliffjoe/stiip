@@ -2,7 +2,9 @@ require 'rails_helper'
 
 RSpec.describe "Api::V1::News", type: :request do
   let!(:article) { NewsArticle.create!(title: "Breaking Financial News", slug: "breaking-financial-news", summary: "Market rises", source: "Nairametrics", published_at: Time.current) }
-  let(:headers) { { 'Authorization' => 'Bearer test_token' } }
+  let(:api_user) { User.create!(email: "api-news@example.com", password: "password", first_name: "API", last_name: "User", confirmed_at: Time.current, role: :business_api) }
+  let(:api_key) { api_user.api_keys.create!(name: "RSpec") }
+  let(:headers) { { 'Authorization' => "Bearer #{api_key.plain_token}" } }
 
   describe "GET /api/v1/news" do
     it "returns all published news" do

@@ -6,8 +6,7 @@ module Authenticatable
 
     rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
-    # Add helper method to check premium status
-    helper_method :premium_user?
+    helper_method :premium_user?, :business_api_user?
   end
 
   private
@@ -26,7 +25,11 @@ module Authenticatable
   end
 
   def premium_user?
-    user_signed_in? && (current_user.premium_role? || current_user.admin_role?)
+    current_access_policy.premium?
+  end
+
+  def business_api_user?
+    current_access_policy.business_api?
   end
   
   def after_sign_in_path_for(resource)

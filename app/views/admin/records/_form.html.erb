@@ -1,0 +1,30 @@
+<%= form_with url: @record.persisted? ? admin_record_path(model: model_param, id: @record.id) : admin_records_model_path(model: model_param), method: @record.persisted? ? :patch : :post, scope: :record, class: "space-y-5" do |form| %>
+  <% if @record.errors.any? %>
+    <div class="rounded-lg border border-red-800 bg-red-900/30 p-4 text-sm text-red-200">
+      <%= @record.errors.full_messages.to_sentence %>
+    </div>
+  <% end %>
+
+  <% editable_columns.each do |column| %>
+    <% column_type = @model_class.type_for_attribute(column).type %>
+    <div>
+      <%= form.label column, column.humanize, class: "mb-2 block text-sm font-semibold text-gray-300" %>
+      <% if column_type == :boolean %>
+        <%= form.check_box column, checked: @record.public_send(column), class: "h-4 w-4 rounded border-gray-700 bg-gray-900 text-navy-600 focus:ring-navy-500" %>
+      <% elsif column_type == :text %>
+        <%= form.text_area column, value: @record.public_send(column), rows: 5, class: "w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white focus:border-navy-500 focus:outline-none focus:ring-1 focus:ring-navy-500" %>
+      <% elsif column_type == :datetime %>
+        <%= form.datetime_local_field column, value: @record.public_send(column)&.strftime("%Y-%m-%dT%H:%M"), class: "w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white focus:border-navy-500 focus:outline-none focus:ring-1 focus:ring-navy-500" %>
+      <% elsif column_type == :date %>
+        <%= form.date_field column, value: @record.public_send(column), class: "w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white focus:border-navy-500 focus:outline-none focus:ring-1 focus:ring-navy-500" %>
+      <% else %>
+        <%= form.text_field column, value: @record.public_send(column), class: "w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white focus:border-navy-500 focus:outline-none focus:ring-1 focus:ring-navy-500" %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="flex items-center gap-3">
+    <%= form.submit class: "rounded-lg bg-navy-600 px-5 py-2 text-sm font-semibold text-white hover:bg-navy-700" %>
+    <%= link_to "Cancel", @record.persisted? ? admin_record_path(model: model_param, id: @record.id) : admin_records_model_path(model: model_param), class: "rounded-lg border border-gray-700 px-5 py-2 text-sm font-semibold text-gray-300 hover:bg-gray-800" %>
+  </div>
+<% end %>

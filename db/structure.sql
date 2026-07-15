@@ -28,6 +28,29 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: api_keys; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.api_keys (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    name character varying NOT NULL,
+    token_digest character varying NOT NULL,
+    token_prefix character varying NOT NULL,
+    last_used_at timestamp(6) without time zone,
+    revoked_at timestamp(6) without time zone,
+    expires_at timestamp(6) without time zone,
+    requests_count integer DEFAULT 0 NOT NULL,
+    monthly_requests_count integer DEFAULT 0 NOT NULL,
+    monthly_requests_reset_at timestamp(6) without time zone,
+    rate_limit_per_minute integer DEFAULT 120 NOT NULL,
+    monthly_quota integer DEFAULT 100000 NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
 -- Name: ar_internal_metadata; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -939,6 +962,14 @@ ALTER TABLE ONLY public.solid_queue_semaphores ALTER COLUMN id SET DEFAULT nextv
 
 
 --
+-- Name: api_keys api_keys_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.api_keys
+    ADD CONSTRAINT api_keys_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: ar_internal_metadata ar_internal_metadata_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1222,6 +1253,20 @@ CREATE INDEX idx_data_imports_status_date ON public.data_import_logs USING btree
 --
 
 CREATE INDEX idx_data_imports_type_date ON public.data_import_logs USING btree (data_type, created_at);
+
+
+--
+-- Name: index_api_keys_on_token_prefix; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_api_keys_on_token_prefix ON public.api_keys USING btree (token_prefix);
+
+
+--
+-- Name: index_api_keys_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_api_keys_on_user_id ON public.api_keys USING btree (user_id);
 
 
 --
@@ -1770,6 +1815,14 @@ ALTER TABLE ONLY public.solid_queue_recurring_executions
 
 
 --
+-- Name: api_keys fk_rails_32c28d0dc2; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.api_keys
+    ADD CONSTRAINT fk_rails_32c28d0dc2 FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
 -- Name: solid_queue_failed_executions fk_rails_39bbc7a631; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1904,6 +1957,7 @@ ALTER TABLE ONLY public.company_news
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260714224500'),
 ('20260714162514'),
 ('20260525'),
 ('20260523211452'),

@@ -2,7 +2,9 @@ require 'rails_helper'
 
 RSpec.describe "Api::V1::Searches", type: :request do
   let!(:company) { Company.create!(name: "Guaranty Trust Bank", ticker_symbol: "GTCO", sector: Sector.find_or_create_by!(name: "Banking", slug: "banking")) }
-  let(:headers) { { 'Authorization' => 'Bearer test_token' } }
+  let(:api_user) { User.create!(email: "api-search@example.com", password: "password", first_name: "API", last_name: "User", confirmed_at: Time.current, role: :business_api) }
+  let(:api_key) { api_user.api_keys.create!(name: "RSpec") }
+  let(:headers) { { 'Authorization' => "Bearer #{api_key.plain_token}" } }
 
   before do
     PgSearch::Multisearch.rebuild(Company)

@@ -1,5 +1,15 @@
 <% content_for(:title, "Smart Screener — NoraCapital") %>
 
+<% if @locked_feature %>
+  <%= render "shared/locked_feature",
+    title: user_signed_in? ? "Smart Screener requires Premium" : "Log in to access the Smart Screener",
+    message: user_signed_in? ? "The screener is a Premium feature for filtering, comparing, and ranking stocks by fundamentals, performance, dividends, and signals." : "You must be logged in before accessing advanced market analytics.",
+    cta_label: user_signed_in? ? "Upgrade to Premium" : "Log in",
+    cta_path: user_signed_in? ? pricing_path : new_user_session_path,
+    secondary_label: user_signed_in? ? nil : "Create free account",
+    secondary_path: new_user_registration_path %>
+<% else %>
+
 <!-- Header -->
 <div class="relative overflow-hidden mb-12">
   <div class="absolute top-0 right-0 w-80 h-80 bg-navy-200/10 rounded-full filter blur-3xl"></div>
@@ -196,3 +206,4 @@
     </table>
   </div>
 </div>
+<% end %>

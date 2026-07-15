@@ -1,0 +1,10 @@
+<div class="max-w-3xl space-y-6">
+  <div>
+    <%= link_to model_label, admin_record_path(model: model_param, id: @record.id), class: "text-sm text-navy-300 hover:text-navy-200" %>
+    <h1 class="mt-2 text-2xl font-bold text-white">Edit <%= model_label %></h1>
+  </div>
+
+  <div class="rounded-lg border border-gray-800 bg-gray-900 p-6">
+    <%= render "form" %>
+  </div>
+</div>

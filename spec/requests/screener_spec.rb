@@ -32,11 +32,25 @@ RSpec.describe "Screener", type: :request do
   end
 
   describe "GET /screener" do
-    it "returns http success" do
+    let(:premium_user) { User.create!(email: "premium-screener@example.com", password: "password", first_name: "Premium", last_name: "User", confirmed_at: Time.current, role: :premium) }
+
+    before do
+      sign_in premium_user
+    end
+
+    it "returns http success for premium users" do
       get "/screener"
       expect(response).to have_http_status(:success)
       expect(response.body).to include("Zenith Bank")
       expect(response.body).to include("Apple Inc.")
+    end
+
+    it "shows a locked prompt to guests" do
+      sign_out premium_user
+      get "/screener"
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include("Log in to access the Smart Screener")
+      expect(response.body).not_to include("Zenith Bank")
     end
 
     it "filters by market" do

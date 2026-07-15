@@ -8,6 +8,8 @@
       <%= button_to "Mark all read", mark_all_read_notifications_path, method: :patch, class: "rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors" %>
     <% end %>
   </div>
+  
+  <%= render "shared/account_nav" if user_signed_in? && !devise_controller? %>
 
   <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
     <% if @notifications.any? %>

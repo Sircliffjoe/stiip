@@ -21,7 +21,7 @@ RSpec.describe "Pricing & Subscriptions Flow", type: :request do
         post checkout_pricing_index_path(plan: "premium")
         expect(response).to redirect_to(profile_path)
         expect(user.reload.role).to eq("premium")
-        expect(flash[:notice]).to eq("Subscription activated successfully (Simulation)!")
+        expect(flash[:notice]).to eq("Premium subscription activated successfully (Simulation)!")
       end
     end
   end

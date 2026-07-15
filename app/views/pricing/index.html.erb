@@ -21,7 +21,7 @@
 </div>
 
 <!-- Plans Grid -->
-<div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 pb-20">
+<div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 pb-20">
   <% @plans.each do |plan| %>
     <div class="relative bg-white border <%= plan[:highlighted] ? 'border-navy-300 shadow-xl ring-2 ring-navy-200' : 'border-gray-200 shadow-sm' %> rounded-2xl p-8 flex flex-col hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
       <% if plan[:highlighted] %>
@@ -58,21 +58,31 @@
         <% end %>
       </ul>
 
-      <% if plan[:highlighted] %>
-        <% if user_signed_in? && current_user.premium_role? %>
+      <% if plan[:key] == :premium || plan[:key] == :business_api %>
+        <% current_plan = user_signed_in? && ((plan[:key] == :premium && current_user.premium_role?) || (plan[:key] == :business_api && current_user.business_api_role?)) %>
+        <% if current_plan %>
           <div class="w-full py-3.5 bg-gray-100 text-gray-500 font-semibold rounded-xl text-center text-sm">
             ✓ Current Plan
+          </div>
+        <% elsif user_signed_in? && plan[:key] == :premium && current_access_policy.premium? %>
+          <div class="w-full py-3.5 bg-gray-100 text-gray-500 font-semibold rounded-xl text-center text-sm">
+            Included
           </div>
         <% else %>
           <%= button_to plan[:cta] || "Upgrade to Premium",
               "/pricing/checkout",
               method: :post,
+              params: { plan: plan[:key] },
               class: "w-full py-3.5 bg-navy-700 text-white font-bold rounded-xl text-center shadow-lg hover:-translate-y-0.5 hover:shadow-xl hover:shadow-navy-600/30 transition-all duration-300 text-sm" %>
         <% end %>
       <% else %>
-        <% if user_signed_in? %>
+        <% if user_signed_in? && current_user.free_role? %>
           <div class="w-full py-3.5 bg-gray-100 text-gray-500 font-semibold rounded-xl text-center text-sm">
             ✓ Current Plan
+          </div>
+        <% elsif user_signed_in? %>
+          <div class="w-full py-3.5 bg-gray-100 text-gray-500 font-semibold rounded-xl text-center text-sm">
+            Included
           </div>
         <% else %>
           <%= link_to plan[:cta],

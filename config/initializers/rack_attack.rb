@@ -24,4 +24,18 @@ class Rack::Attack
       req.ip
     end
   end
+
+  # Throttle API requests by key prefix. The app still enforces exact token auth and monthly quotas.
+  throttle('api/key', limit: 120, period: 1.minute) do |req|
+    if req.path.start_with?('/api/v1/')
+      token = req.get_header('HTTP_AUTHORIZATION').to_s.split.last
+      token&.first(ApiKey::TOKEN_PREFIX_LENGTH) if token.present?
+    end
+  end
+
+  throttle('api/invalid-token/ip', limit: 20, period: 5.minutes) do |req|
+    if req.path.start_with?('/api/v1/') && req.get_header('HTTP_AUTHORIZATION').blank?
+      req.ip
+    end
+  end
 end

@@ -17,6 +17,11 @@ class WatchlistsController < ApplicationController
   end
 
   def create
+    unless current_access_policy.can_create_watchlist?
+      redirect_to watchlists_path, alert: "Free users can create 1 watchlist. Upgrade to Premium for unlimited watchlists."
+      return
+    end
+
     @watchlist = current_user.watchlists.build(watchlist_params)
     @watchlist.is_default = current_user.watchlists.none?
 

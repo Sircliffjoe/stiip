@@ -1,5 +1,8 @@
 class ScreenerController < ApplicationController
   def index
+    @locked_feature = !current_access_policy.can_use_screener?
+    return if @locked_feature
+
     @sectors = Sector.order(:name)
     @companies = Company.includes(:sector)
 

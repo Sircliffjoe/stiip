@@ -17,22 +17,28 @@ module Webhooks
           user = User.find(user_id)
 
           # Create or update subscription
+          plan = verify_response.dig(:data, :metadata, :plan) ||
+            verify_response.dig("data", "metadata", "plan") ||
+            "premium"
+          plan = plan.to_s.presence_in(%w[premium business_api]) || "premium"
+
           subscription = user.subscription || user.build_subscription
           subscription.update!(
             status: :active,
-            plan: :premium,
-            paystack_reference: payment_reference,
+            plan: plan,
+            payment_reference: payment_reference,
+            starts_at: Time.current,
             expires_at: 1.month.from_now
           )
 
           # Update user role
-          user.update!(role: :premium)
+          user.update!(role: subscription.plan)
 
           # Create notification
           Notification.create!(
             user: user,
-            title: "Welcome to Premium!",
-            body: "Your payment was successful. You now have full access to all NoraCapital features.",
+            title: "Welcome to #{subscription.plan.titleize}!",
+            body: "Your payment was successful. Your #{subscription.plan.titleize} access is now active.",
             notification_type: "success"
           )
         end

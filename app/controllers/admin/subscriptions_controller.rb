@@ -25,6 +25,7 @@ class Admin::SubscriptionsController < Admin::ApplicationController
 
   def update
     if @subscription.update(subscription_params)
+      @subscription.user.update!(role: @subscription.plan)
       redirect_to admin_subscription_path(@subscription), notice: "Subscription updated successfully."
     else
       render :edit, status: :unprocessable_entity
@@ -59,7 +60,7 @@ class Admin::SubscriptionsController < Admin::ApplicationController
   end
 
   def calculate_total_revenue
-    # Count active premium subscriptions at ₦2500/month
-    Subscription.where(status: :active, plan: :premium).count * 2500
+    Subscription.where(status: :active, plan: :premium).count * 2500 +
+      Subscription.where(status: :active, plan: :business_api).count * 25_000
   end
 end

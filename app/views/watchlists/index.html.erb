@@ -5,11 +5,17 @@
       <p class="mt-1 text-gray-600">Track companies and receive watchlist-driven news alerts.</p>
     </div>
 
-    <%= form_with model: @watchlist, class: "flex gap-2" do |f| %>
-      <%= f.text_field :name, placeholder: "New watchlist", class: "w-56 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-navy-500 focus:ring-navy-500" %>
-      <%= f.submit "Create", class: "rounded-lg bg-navy-600 px-4 py-2 text-sm font-semibold text-white hover:bg-navy-700" %>
+    <% if current_access_policy.can_create_watchlist? %>
+      <%= form_with model: @watchlist, class: "flex gap-2" do |f| %>
+        <%= f.text_field :name, placeholder: "New watchlist", class: "w-56 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-navy-500 focus:ring-navy-500" %>
+        <%= f.submit "Create", class: "rounded-lg bg-navy-600 px-4 py-2 text-sm font-semibold text-white hover:bg-navy-700" %>
+      <% end %>
+    <% else %>
+      <%= link_to "Upgrade for unlimited watchlists", pricing_path, class: "rounded-lg bg-navy-700 px-4 py-2 text-sm font-semibold text-white hover:bg-navy-800" %>
     <% end %>
   </div>
+
+  <%= render "shared/account_nav" if user_signed_in? && !devise_controller? %>
 
   <% if @watchlist&.errors&.any? %>
     <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
