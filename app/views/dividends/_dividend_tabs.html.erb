@@ -1,73 +1,93 @@
-<div>
-  <div class="mb-6 flex flex-wrap gap-2 border-b border-gray-200">
-    <%= link_to dividends_path(tab: "historical", historical_limit: @historical_limit, upcoming_limit: @upcoming_limit),
-      data: { turbo_frame: "dividends_content" },
-      class: [
-        "border-b-2 px-4 py-3 text-sm font-bold transition",
-        @selected_tab == "historical" ? "border-navy-700 text-navy-700" : "border-transparent text-gray-500 hover:text-navy-700"
-      ].join(" ") do %>
+<div class="dividend-tabs">
+  <style>
+    .dividend-tabs input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .dividend-tabs .dividend-panel {
+      display: none;
+    }
+
+    #dividend-tab-historical:checked ~ .dividend-tab-labels label[for="dividend-tab-historical"],
+    #dividend-tab-upcoming:checked ~ .dividend-tab-labels label[for="dividend-tab-upcoming"] {
+      border-color: #001f3f;
+      color: #001f3f;
+    }
+
+    #dividend-tab-historical:checked ~ .dividend-panels #dividend-panel-historical,
+    #dividend-tab-upcoming:checked ~ .dividend-panels #dividend-panel-upcoming {
+      display: block;
+    }
+  </style>
+
+  <input id="dividend-tab-historical" type="radio" name="dividend_tab" <%= "checked" unless @selected_tab == "upcoming" %>>
+  <input id="dividend-tab-upcoming" type="radio" name="dividend_tab" <%= "checked" if @selected_tab == "upcoming" %>>
+
+  <div class="dividend-tab-labels mb-6 flex flex-wrap gap-2 border-b border-gray-200">
+    <label for="dividend-tab-historical" class="cursor-pointer border-b-2 border-transparent px-4 py-3 text-sm font-bold text-gray-500 transition hover:text-navy-700">
       Historical Dividends
       <span class="ml-1 text-xs font-semibold text-gray-400">(<%= number_with_delimiter(@historical_total_count) %>)</span>
-    <% end %>
+    </label>
 
-    <%= link_to dividends_path(tab: "upcoming", historical_limit: @historical_limit, upcoming_limit: @upcoming_limit),
-      data: { turbo_frame: "dividends_content" },
-      class: [
-        "border-b-2 px-4 py-3 text-sm font-bold transition",
-        @selected_tab == "upcoming" ? "border-navy-700 text-navy-700" : "border-transparent text-gray-500 hover:text-navy-700"
-      ].join(" ") do %>
+    <label for="dividend-tab-upcoming" class="cursor-pointer border-b-2 border-transparent px-4 py-3 text-sm font-bold text-gray-500 transition hover:text-navy-700">
       Upcoming Dividends
       <span class="ml-1 text-xs font-semibold text-gray-400">(<%= number_with_delimiter(@upcoming_total_count) %>)</span>
-    <% end %>
+    </label>
   </div>
 
-  <% if @selected_tab == "upcoming" %>
-    <div class="mb-4">
-      <h2 class="text-xl font-bold text-gray-900">Upcoming Dividends</h2>
-      <p class="mt-1 text-sm text-gray-500">Future announced qualification and payment dates will appear here when available from API feeds or admin entry.</p>
-    </div>
-
-    <% if @upcoming_dividends.any? %>
-      <div class="space-y-4">
-        <% @upcoming_dividends.each do |dividend| %>
-          <%= render "dividend_row", dividend: dividend, date_label: "Expected Payment" %>
-        <% end %>
+  <div class="dividend-panels">
+    <div id="dividend-panel-historical" class="dividend-panel">
+      <div class="mb-4">
+        <h2 class="text-xl font-bold text-gray-900">Historical Dividends</h2>
+        <p class="mt-1 text-sm text-gray-500">Past payouts imported from EODHD or entered manually by admins.</p>
       </div>
 
-      <% unless @premium_required %>
-        <%= render "load_more",
-          tab: "upcoming",
-          current_limit: @upcoming_limit,
-          total_count: @upcoming_total_count,
-          historical_limit: @historical_limit,
-          upcoming_limit: [@upcoming_limit + DividendsController::DEFAULT_PAGE_SIZE, DividendsController::MAX_PAGE_SIZE].min %>
+      <% if @historical_dividends.any? %>
+        <div class="space-y-4">
+          <% @historical_dividends.each do |dividend| %>
+            <%= render "dividend_row", dividend: dividend, date_label: "Paid / Qualified" %>
+          <% end %>
+        </div>
+
+        <% unless @premium_required %>
+          <%= render "load_more",
+            tab: "historical",
+            current_limit: @historical_limit,
+            total_count: @historical_total_count,
+            historical_limit: [@historical_limit + DividendsController::DEFAULT_PAGE_SIZE, DividendsController::MAX_PAGE_SIZE].min,
+            upcoming_limit: @upcoming_limit %>
+        <% end %>
+      <% else %>
+        <%= render "dividend_empty_state", message: "No historical dividends are available yet. Sync EODHD dividends or add records from the admin dashboard." %>
       <% end %>
-    <% else %>
-      <%= render "dividend_empty_state", message: "No upcoming dividend announcements are available yet." %>
-    <% end %>
-  <% else %>
-    <div class="mb-4">
-      <h2 class="text-xl font-bold text-gray-900">Historical Dividends</h2>
-      <p class="mt-1 text-sm text-gray-500">Past payouts imported from EODHD or entered manually by admins.</p>
     </div>
 
-    <% if @historical_dividends.any? %>
-      <div class="space-y-4">
-        <% @historical_dividends.each do |dividend| %>
-          <%= render "dividend_row", dividend: dividend, date_label: "Paid / Qualified" %>
-        <% end %>
+    <div id="dividend-panel-upcoming" class="dividend-panel">
+      <div class="mb-4">
+        <h2 class="text-xl font-bold text-gray-900">Upcoming Dividends</h2>
+        <p class="mt-1 text-sm text-gray-500">Future announced qualification and payment dates will appear here when available from API feeds or admin entry.</p>
       </div>
 
-      <% unless @premium_required %>
-        <%= render "load_more",
-          tab: "historical",
-          current_limit: @historical_limit,
-          total_count: @historical_total_count,
-          historical_limit: [@historical_limit + DividendsController::DEFAULT_PAGE_SIZE, DividendsController::MAX_PAGE_SIZE].min,
-          upcoming_limit: @upcoming_limit %>
+      <% if @upcoming_dividends.any? %>
+        <div class="space-y-4">
+          <% @upcoming_dividends.each do |dividend| %>
+            <%= render "dividend_row", dividend: dividend, date_label: "Expected Payment" %>
+          <% end %>
+        </div>
+
+        <% unless @premium_required %>
+          <%= render "load_more",
+            tab: "upcoming",
+            current_limit: @upcoming_limit,
+            total_count: @upcoming_total_count,
+            historical_limit: @historical_limit,
+            upcoming_limit: [@upcoming_limit + DividendsController::DEFAULT_PAGE_SIZE, DividendsController::MAX_PAGE_SIZE].min %>
+        <% end %>
+      <% else %>
+        <%= render "dividend_empty_state", message: "No upcoming dividend announcements are available yet." %>
       <% end %>
-    <% else %>
-      <%= render "dividend_empty_state", message: "No historical dividends are available yet. Sync EODHD dividends or add records from the admin dashboard." %>
-    <% end %>
-  <% end %>
+    </div>
+  </div>
 </div>

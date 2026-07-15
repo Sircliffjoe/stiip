@@ -20,18 +20,20 @@ RSpec.describe "Dividends", type: :request do
     expect(response.body).to include("Upcoming Dividends")
     expect(response.body).to include("Highest Latest Yield")
     expect(response.body).to include("Past payouts imported from EODHD or entered manually by admins.")
-    expect(response.body).to include("tab=upcoming")
+    expect(response.body).to include('for="dividend-tab-upcoming"')
+    expect(response.body).to include('id="dividend-panel-upcoming"')
   end
 
-  it "switches to upcoming dividends through a real tab link" do
+  it "renders CSS-only tab controls without tab navigation links" do
     sign_in premium_user
 
-    get dividends_path(tab: "upcoming")
+    get dividends_path
 
     expect(response).to have_http_status(:ok)
-    expect(response.body).to include("Upcoming Dividends")
+    expect(response.body).to include('id="dividend-tab-historical" type="radio"')
+    expect(response.body).to include('id="dividend-tab-upcoming" type="radio"')
     expect(response.body).to include("Expected Payment")
-    expect(response.body).to include("border-navy-700 text-navy-700")
+    expect(response.body).not_to include('href="/dividends?historical_limit=25&amp;tab=upcoming')
   end
 
   it "paginates historical dividends with a load more link" do
