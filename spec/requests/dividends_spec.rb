@@ -20,7 +20,39 @@ RSpec.describe "Dividends", type: :request do
     expect(response.body).to include("Upcoming Dividends")
     expect(response.body).to include("Highest Latest Yield")
     expect(response.body).to include("Past payouts imported from EODHD or entered manually by admins.")
-    expect(response.body).to include("Future announced qualification and payment dates")
+    expect(response.body).to include("tab=upcoming")
+  end
+
+  it "switches to upcoming dividends through a real tab link" do
+    sign_in premium_user
+
+    get dividends_path(tab: "upcoming")
+
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include("Upcoming Dividends")
+    expect(response.body).to include("Expected Payment")
+    expect(response.body).to include("border-navy-700 text-navy-700")
+  end
+
+  it "paginates historical dividends with a load more link" do
+    sign_in premium_user
+
+    30.times do |index|
+      Dividend.create!(
+        company: company,
+        amount: index + 1,
+        year: 1990 + index,
+        qualification_date: (index + 2).years.ago.to_date,
+        payment_date: (index + 2).years.ago.to_date + 1.week,
+        interim: index.even?
+      )
+    end
+
+    get dividends_path
+
+    expect(response.body).to include("Load more")
+    expect(response.body).to include("25 of 31")
+    expect(response.body).to include("historical_limit=50")
   end
 
   it "shows a login prompt to guests" do

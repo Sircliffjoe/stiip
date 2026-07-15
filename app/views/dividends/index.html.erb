@@ -50,50 +50,9 @@
         </div>
       <% end %>
 
-      <div data-controller="tabs">
-        <div class="mb-6 flex flex-wrap gap-2 border-b border-gray-200">
-          <button data-tabs-target="tab" data-action="tabs#switch" class="border-b-2 border-transparent px-4 py-3 text-sm font-bold text-gray-500 transition hover:text-navy-700">
-            Historical Dividends
-          </button>
-          <button data-tabs-target="tab" data-action="tabs#switch" class="border-b-2 border-transparent px-4 py-3 text-sm font-bold text-gray-500 transition hover:text-navy-700">
-            Upcoming Dividends
-          </button>
-        </div>
-
-        <div data-tabs-target="panel">
-          <div class="mb-4">
-            <h2 class="text-xl font-bold text-gray-900">Historical Dividends</h2>
-            <p class="mt-1 text-sm text-gray-500">Past payouts imported from EODHD or entered manually by admins.</p>
-          </div>
-
-          <% if @historical_dividends.any? %>
-            <div class="space-y-4">
-              <% @historical_dividends.each do |dividend| %>
-                <%= render "dividend_row", dividend: dividend, date_label: "Paid / Qualified" %>
-              <% end %>
-            </div>
-          <% else %>
-            <%= render "dividend_empty_state", message: "No historical dividends are available yet. Sync EODHD dividends or add records from the admin dashboard." %>
-          <% end %>
-        </div>
-
-        <div data-tabs-target="panel" class="hidden">
-          <div class="mb-4">
-            <h2 class="text-xl font-bold text-gray-900">Upcoming Dividends</h2>
-            <p class="mt-1 text-sm text-gray-500">Future announced qualification and payment dates will appear here when available from API feeds or admin entry.</p>
-          </div>
-
-          <% if @upcoming_dividends.any? %>
-            <div class="space-y-4">
-              <% @upcoming_dividends.each do |dividend| %>
-                <%= render "dividend_row", dividend: dividend, date_label: "Expected Payment" %>
-              <% end %>
-            </div>
-          <% else %>
-            <%= render "dividend_empty_state", message: "No upcoming dividend announcements are available yet." %>
-          <% end %>
-        </div>
-      </div>
+      <%= turbo_frame_tag "dividends_content" do %>
+        <%= render "dividend_tabs" %>
+      <% end %>
     <% end %>
   </div>
 </div>
