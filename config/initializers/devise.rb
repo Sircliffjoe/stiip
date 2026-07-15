@@ -1,5 +1,5 @@
 Devise.setup do |config|
-  config.mailer_sender = 'noreply@noracapital.com.ng'
+  config.mailer_sender = "#{ENV.fetch("BREVO_SENDER_NAME", "NoraCapital")} <#{ENV.fetch("BREVO_SENDER_EMAIL", "noreply@noracapital.com.ng")}>"
   require 'devise/orm/active_record'
   config.case_insensitive_keys = [:email]
   config.strip_whitespace_keys = [:email]

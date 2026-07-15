@@ -72,6 +72,8 @@ GEM
       securerandom (>= 0.3)
       tzinfo (~> 2.0, >= 2.0.5)
       uri (>= 0.13.1)
+    addressable (2.9.0)
+      public_suffix (>= 2.0.2, < 8.0)
     ast (2.4.3)
     base64 (0.3.0)
     bcrypt (3.1.22)
@@ -85,6 +87,10 @@ GEM
       msgpack (~> 1.2)
     brakeman (8.0.4)
       racc
+    brevo (4.0.0)
+      addressable (~> 2.3, >= 2.3.0)
+      json (~> 2.1, >= 2.1.0)
+      typhoeus (~> 1.0, >= 1.0.1)
     builder (3.3.0)
     bundler-audit (0.9.3)
       bundler (>= 1.2.0)
@@ -115,6 +121,9 @@ GEM
     erubi (1.13.1)
     et-orbi (1.4.0)
       tzinfo
+    ethon (0.18.0)
+      ffi (>= 1.15.0)
+      logger
     factory_bot (6.6.0)
       activesupport (>= 6.1.0)
     factory_bot_rails (6.5.1)
@@ -248,6 +257,7 @@ GEM
     psych (5.3.1)
       date
       stringio
+    public_suffix (7.0.5)
     puma (8.0.1)
       nio4r (~> 2.0)
     pundit (2.5.2)
@@ -411,6 +421,8 @@ GEM
     turbo-rails (2.0.23)
       actionpack (>= 7.1.0)
       railties (>= 7.1.0)
+    typhoeus (1.6.0)
+      ethon (>= 0.18.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unicode-display_width (3.2.0)
@@ -449,6 +461,7 @@ PLATFORMS
 DEPENDENCIES
   bootsnap
   brakeman
+  brevo
   bundler-audit
   chartkick
   database_cleaner-active_record
