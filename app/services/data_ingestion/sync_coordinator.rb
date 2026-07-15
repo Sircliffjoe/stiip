@@ -274,7 +274,9 @@ module DataIngestion
       {
         name: normalize_company_name(company_data[:name], company_data[:ticker_symbol]),
         sector: sector,
+        description: company_data[:description],
         website: company_data[:website],
+        logo_url: company_data[:logo_url],
         market_cap: company_data[:market_cap],
         current_price: company_data[:current_price],
         opening_price: company_data[:opening_price],
@@ -282,6 +284,7 @@ module DataIngestion
         shares_outstanding: company_data[:shares_outstanding],
         high_52_week: company_data[:high_52_week],
         low_52_week: company_data[:low_52_week],
+        country: company_data[:country],
         listed: company_data.fetch(:listed, true)
       }.compact
     end

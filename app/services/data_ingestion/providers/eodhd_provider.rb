@@ -25,7 +25,11 @@ module DataIngestion
       end
 
       def fetch_companies
-        []
+        handle_request do
+          @exchange_codes.flat_map do |exchange_code|
+            fetch_exchange_companies(exchange_code)
+          end.uniq { |company| company[:ticker_symbol] }
+        end
       end
 
       def fetch_dividends(start_date:, end_date:)
@@ -50,6 +54,61 @@ module DataIngestion
       end
 
       private
+
+      def fetch_exchange_companies(exchange_code)
+        Rails.logger.info("[EodhdProvider] Fetching company list for #{exchange_code}")
+
+        rows = Array(get_json("/exchange-symbol-list/#{exchange_code}"))
+        rows.filter_map.with_index do |row, index|
+          listing = normalize_company_listing(row)
+          next if listing.blank?
+
+          if index < company_fundamentals_limit
+            listing.merge(fetch_company_fundamentals(listing[:ticker_symbol], exchange_code))
+          else
+            listing
+          end.compact
+        end
+      rescue APIError => e
+        Rails.logger.warn("[EodhdProvider] Company list fetch failed for #{exchange_code}: #{e.message}")
+        []
+      end
+
+      def normalize_company_listing(row)
+        return nil unless row.is_a?(Hash)
+
+        ticker_symbol = normalize_ticker(value_for(row, "Code", "code", "Symbol", "symbol", "Ticker", "ticker"))
+        return nil if ticker_symbol.blank? || non_company_security?(value_for(row, "Type", "type"))
+
+        {
+          ticker_symbol: ticker_symbol,
+          name: value_for(row, "Name", "name") || ticker_symbol,
+          sector: value_for(row, "Sector", "sector") || "Unclassified",
+          country: value_for(row, "Country", "country") || "NG",
+          listed: true,
+          source: "EODHD"
+        }
+      end
+
+      def fetch_company_fundamentals(ticker_symbol, exchange_code)
+        symbol = eodhd_symbol(ticker_symbol, exchange_code)
+        response = get_json("/fundamentals/#{symbol}", filter: "General,Highlights")
+        general = value_for(response, "General") || {}
+        highlights = value_for(response, "Highlights") || {}
+
+        {
+          name: value_for(general, "Name", "name"),
+          sector: value_for(general, "Sector", "sector"),
+          website: normalize_website(value_for(general, "WebURL", "weburl", "WebsiteURL", "website")),
+          logo_url: normalize_logo_url(value_for(general, "LogoURL", "logoUrl", "logo_url", "Logo")),
+          description: value_for(general, "Description", "description"),
+          country: value_for(general, "CountryISO", "Country", "country"),
+          market_cap: value_for(highlights, "MarketCapitalization", "marketCapitalization", "market_cap")
+        }
+      rescue APIError => e
+        Rails.logger.warn("[EodhdProvider] Fundamentals fetch failed for #{symbol}: #{e.message}")
+        {}
+      end
 
       def fetch_company_dividends(ticker_symbol, start_date, end_date)
         rows = []
@@ -86,6 +145,39 @@ module DataIngestion
           currency: value_for(row, "currency") || "NGN",
           source: "EODHD"
         }
+      end
+
+      def company_fundamentals_limit
+        ENV.fetch("EODHD_COMPANY_FUNDAMENTALS_LIMIT", 250).to_i.clamp(0, 5_000)
+      end
+
+      def normalize_ticker(value)
+        value.to_s.split(".").first.to_s.strip.upcase.presence
+      end
+
+      def non_company_security?(type)
+        normalized = type.to_s.downcase
+        return false if normalized.blank?
+
+        normalized.match?(/etf|fund|index|bond|warrant|note/)
+      end
+
+      def normalize_website(value)
+        return nil if value.blank?
+
+        url = value.to_s.strip
+        url.match?(%r{\Ahttps?://}i) ? url : "https://#{url}"
+      end
+
+      def normalize_logo_url(value)
+        return nil if value.blank?
+
+        url = value.to_s.strip
+        return URI.join(@base_url, url).to_s if url.start_with?("/")
+
+        normalize_website(url)
+      rescue URI::InvalidURIError
+        nil
       end
 
       def interim_dividend?(row, ex_date)

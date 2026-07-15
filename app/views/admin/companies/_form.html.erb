@@ -86,6 +86,13 @@
     </div>
 
     <div>
+      <%= f.label :logo_url, "Logo URL", class: "block text-sm font-medium text-gray-300" %>
+      <div class="mt-1">
+        <%= f.url_field :logo_url, class: "shadow-sm focus:ring-navy-500 focus:border-navy-500 block w-full sm:text-sm border-gray-700 rounded-md bg-gray-800 text-white placeholder-gray-500" %>
+      </div>
+    </div>
+
+    <div>
       <%= f.label :founded_year, class: "block text-sm font-medium text-gray-300" %>
       <div class="mt-1">
         <%= f.number_field :founded_year, class: "shadow-sm focus:ring-navy-500 focus:border-navy-500 block w-full sm:text-sm border-gray-700 rounded-md bg-gray-800 text-white placeholder-gray-500" %>

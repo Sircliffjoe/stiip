@@ -9,7 +9,7 @@ module Api
         news = NewsArticle.published.search_by_term(query).limit(10)
 
         render json: {
-          companies: companies.as_json(only: [:id, :name, :ticker_symbol]),
+          companies: companies.as_json(only: [:id, :name, :ticker_symbol, :logo_url]),
           news: news.as_json(only: [:id, :title, :slug, :published_at])
         }
       end

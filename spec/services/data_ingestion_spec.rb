@@ -495,10 +495,96 @@ RSpec.describe DataIngestion::Providers::CompositeMarketProvider, type: :service
       expect(result.first[:title]).to eq("Live Market News")
     end
   end
+
+  describe "#fetch_companies" do
+    it "merges provider profile fields so logo data is not lost when price providers win" do
+      provider = described_class.new(providers: [
+        Class.new do
+          def fetch_companies
+            [
+              {
+                ticker_symbol: "GTCO",
+                name: "GTCO PLC",
+                current_price: 40,
+                source: "NGN Market",
+                source_time: Time.current
+              }
+            ]
+          end
+        end.new,
+        Class.new do
+          def fetch_companies
+            [
+              {
+                ticker_symbol: "GTCO",
+                name: "Guaranty Trust Holding Company PLC",
+                logo_url: "https://eodhd.com/img/logos/GTCO.png",
+                website: "https://www.gtcoplc.com",
+                source: "EODHD"
+              }
+            ]
+          end
+        end.new
+      ])
+
+      result = provider.fetch_companies
+
+      expect(result.first).to include(
+        ticker_symbol: "GTCO",
+        current_price: 40,
+        logo_url: "https://eodhd.com/img/logos/GTCO.png",
+        website: "https://www.gtcoplc.com"
+      )
+    end
+  end
 end
 
 RSpec.describe DataIngestion::Providers::EodhdProvider, type: :service do
   let(:provider) { described_class.new(api_key: "test-key") }
+
+  describe "#fetch_companies" do
+    it "populates listed companies from EODHD exchange symbols and enriches logos from fundamentals" do
+      allow(provider).to receive(:company_fundamentals_limit).and_return(5)
+      allow(provider).to receive(:get_json).with("/exchange-symbol-list/XNSA").and_return([
+        {
+          "Code" => "GTCO",
+          "Name" => "GTCO PLC",
+          "Type" => "Common Stock",
+          "Country" => "Nigeria"
+        }
+      ])
+      allow(provider).to receive(:get_json).with(
+        "/fundamentals/GTCO.XNSA",
+        filter: "General,Highlights"
+      ).and_return({
+        "General" => {
+          "Name" => "Guaranty Trust Holding Company PLC",
+          "Sector" => "Financial Services",
+          "WebURL" => "https://www.gtcoplc.com",
+          "LogoURL" => "https://eodhd.com/img/logos/ngx/GTCO.png",
+          "Description" => "A listed Nigerian financial services group.",
+          "CountryISO" => "NG"
+        },
+        "Highlights" => {
+          "MarketCapitalization" => 1_000_000_000
+        }
+      })
+
+      result = provider.fetch_companies
+
+      expect(result.length).to eq(1)
+      expect(result.first).to include(
+        ticker_symbol: "GTCO",
+        name: "Guaranty Trust Holding Company PLC",
+        sector: "Financial Services",
+        website: "https://www.gtcoplc.com",
+        logo_url: "https://eodhd.com/img/logos/ngx/GTCO.png",
+        country: "NG",
+        source: "EODHD",
+        listed: true
+      )
+    end
+  end
 
   describe "#fetch_dividends" do
     it "normalizes Nigerian dividend history from EODHD" do

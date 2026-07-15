@@ -73,12 +73,17 @@ module DataIngestion
       end
 
       def best_company_row(rows)
-        rows.max_by do |row|
-          [
-            row[:source_time] || Time.at(0),
-            row[:source] == "NGN Market" ? 1 : 0
-          ]
+        rows.sort_by { |row| company_row_priority(row) }.each_with_object({}) do |row, merged|
+          merged.merge!(row.compact)
         end
+      end
+
+      def company_row_priority(row)
+        [
+          row[:source_time] || Time.at(0),
+          row[:source] == "NGN Market" ? 2 : 0,
+          row[:source] == "NGX Pulse" ? 1 : 0
+        ]
       end
 
       def merge_unique_rows(rows, keys)

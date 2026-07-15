@@ -1,9 +1,7 @@
 <% company = dividend.company %>
 <%= link_to company_path(company.ticker_symbol), class: "flex flex-col items-start justify-between gap-4 rounded-xl border border-gray-200 bg-gray-50 p-4 shadow-sm transition hover:border-navy-300 hover:shadow-md sm:flex-row sm:items-center" do %>
   <div class="flex items-center gap-4">
-    <div class="flex h-12 w-12 items-center justify-center rounded-full bg-navy-700 text-sm font-bold text-white">
-      <%= company.ticker_symbol.first(2) %>
-    </div>
+    <%= render "companies/logo", company: company, size_class: "h-12 w-12", text_class: "text-sm" %>
     <div>
       <p class="text-lg font-bold text-gray-900"><%= company.ticker_symbol %></p>
       <p class="text-sm text-gray-600"><%= company.name %></p>

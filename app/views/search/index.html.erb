@@ -54,9 +54,7 @@
           <% @companies.each do |company| %>
             <%= link_to company_path(company.ticker_symbol), class: "block bg-white border border-gray-200 rounded-xl p-5 hover:border-navy-300 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 group" do %>
               <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-full bg-navy-700 flex items-center justify-center text-white font-bold shrink-0">
-                  <%= company.ticker_symbol.first(2) %>
-                </div>
+                <%= render "companies/logo", company: company, size_class: "h-12 w-12", text_class: "text-base" %>
                 <div class="flex-1">
                   <div class="font-semibold text-gray-900 group-hover:text-navy-700 transition-colors"><%= company.name %></div>
                   <div class="text-sm text-gray-500"><%= company.ticker_symbol %> · <%= company.sector&.name %></div>

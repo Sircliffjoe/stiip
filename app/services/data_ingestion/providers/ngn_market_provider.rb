@@ -82,6 +82,7 @@ module DataIngestion
           name: value_for(company, "name"),
           sector: value_for(company, "sector"),
           website: normalize_website(value_for(company, "website")),
+          logo_url: normalize_website(value_for(company, "logo_url", "logoUrl", "logo", "image", "icon")),
           shares_outstanding: value_for(company, "shares_outstanding"),
           market_cap: value_for(company, "market_cap"),
           current_price: value_for(company, "price", "current_price", "close"),

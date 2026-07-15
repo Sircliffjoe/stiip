@@ -107,6 +107,8 @@ module DataIngestion
           ticker_symbol: value_for(stock, "symbol", "ticker", "ticker_symbol"),
           name: value_for(stock, "name"),
           sector: value_for(stock, "sector"),
+          website: normalize_website(value_for(stock, "website", "web_url", "webUrl")),
+          logo_url: normalize_website(value_for(stock, "logo_url", "logoUrl", "logo", "image", "icon")),
           shares_outstanding: value_for(stock, "shares_outstanding"),
           market_cap: value_for(stock, "market_cap", "market_capitalisation", "market_capitalization"),
           current_price: close,
@@ -246,6 +248,13 @@ module DataIngestion
         else
           []
         end
+      end
+
+      def normalize_website(value)
+        return nil if value.blank?
+
+        url = value.to_s.strip
+        url.match?(%r{\Ahttps?://}i) ? url : "https://#{url}"
       end
     end
   end

@@ -1,6 +1,6 @@
 class CompanySerializer
   include JSONAPI::Serializer
-  attributes :name, :ticker_symbol, :market_cap, :pe_ratio, :dividend_yield
+  attributes :name, :ticker_symbol, :market_cap, :pe_ratio, :dividend_yield, :logo_url
   
   attribute :current_price do |object|
     object.latest_price

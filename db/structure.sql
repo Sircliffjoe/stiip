@@ -110,7 +110,8 @@ CREATE TABLE public.companies (
     net_profit bigint,
     signal integer DEFAULT 1,
     ai_analysis_summary text,
-    ai_analysis_updated_at timestamp(6) without time zone
+    ai_analysis_updated_at timestamp(6) without time zone,
+    logo_url character varying
 );
 
 
@@ -1965,6 +1966,7 @@ ALTER TABLE ONLY public.company_news
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260715231500'),
 ('20260715225500'),
 ('20260715193000'),
 ('20260714224500'),

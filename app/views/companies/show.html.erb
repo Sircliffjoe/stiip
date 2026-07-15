@@ -11,9 +11,7 @@
     
     <div class="flex flex-col md:flex-row justify-between gap-6 relative z-10">
       <div class="flex items-center gap-6">
-        <div class="w-20 h-20 rounded-2xl bg-navy-700 border border-navy-200 shadow-inner flex items-center justify-center font-bold text-white text-2xl">
-          <%= @company.ticker_symbol[0..1] %>
-        </div>
+        <%= render "companies/logo", company: @company, size_class: "h-20 w-20", text_class: "text-2xl", rounded_class: "rounded-2xl" %>
         <div>
           <h1 class="text-3xl font-bold text-gray-900"><%= @company.name %></h1>
           <div class="flex items-center gap-3 mt-2 text-sm text-gray-600">

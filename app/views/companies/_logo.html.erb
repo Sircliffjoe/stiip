@@ -1,0 +1,12 @@
+<% size_class = local_assigns.fetch(:size_class, "h-10 w-10") %>
+<% text_class = local_assigns.fetch(:text_class, "text-sm") %>
+<% rounded_class = local_assigns.fetch(:rounded_class, "rounded-full") %>
+<% image_class = "#{size_class} #{rounded_class} border border-gray-200 bg-white object-contain p-1 shadow-sm" %>
+
+<% if company.logo_source.present? %>
+  <%= image_tag company.logo_source(size: 128), alt: "#{company.name} logo", class: image_class, loading: "lazy" %>
+<% else %>
+  <div class="<%= "#{size_class} #{rounded_class} bg-navy-700 border border-navy-200 flex items-center justify-center font-bold text-white #{text_class}" %>">
+    <%= company.ticker_symbol.first(3) %>
+  </div>
+<% end %>

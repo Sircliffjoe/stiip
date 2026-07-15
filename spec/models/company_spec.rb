@@ -28,4 +28,20 @@ RSpec.describe Company, type: :model do
       expect(company.pe_ratio_explanation).to include('priced high')
     end
   end
+
+  describe "#logo_source" do
+    it "uses an explicit API logo URL first" do
+      company.logo_url = "https://cdn.example.com/gtco.png"
+      company.website = "https://gtbank.com"
+
+      expect(company.logo_source).to eq("https://cdn.example.com/gtco.png")
+    end
+
+    it "falls back to a real website favicon when a logo URL is not stored" do
+      company.website = "gtbank.com"
+
+      expect(company.logo_source).to include("www.google.com/s2/favicons")
+      expect(company.logo_source).to include("domain=gtbank.com")
+    end
+  end
 end
