@@ -1362,10 +1362,10 @@ CREATE INDEX index_dividends_on_company_id ON public.dividends USING btree (comp
 
 
 --
--- Name: index_dividends_on_company_id_and_year_and_interim; Type: INDEX; Schema: public; Owner: -
+-- Name: index_dividends_on_company_year_type_dates_amount; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_dividends_on_company_id_and_year_and_interim ON public.dividends USING btree (company_id, year, interim);
+CREATE UNIQUE INDEX index_dividends_on_company_year_type_dates_amount ON public.dividends USING btree (company_id, year, interim, qualification_date, payment_date, amount);
 
 
 --
@@ -1965,6 +1965,7 @@ ALTER TABLE ONLY public.company_news
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260715225500'),
 ('20260715193000'),
 ('20260714224500'),
 ('20260714162514'),

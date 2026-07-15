@@ -12,8 +12,80 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    <style>
+      @media (max-width: 767px) {
+        .admin-shell main {
+          overflow-x: hidden;
+        }
+
+        .admin-shell main table {
+          min-width: 48rem;
+        }
+
+        .admin-shell main div:has(> table),
+        .admin-shell main div:has(> div > table) {
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+
+        .admin-shell main th,
+        .admin-shell main td {
+          white-space: nowrap;
+        }
+
+        .admin-shell main td p,
+        .admin-shell main td div,
+        .admin-shell main dd,
+        .admin-shell main p {
+          overflow-wrap: anywhere;
+        }
+
+        .admin-shell main > div {
+          max-width: 100%;
+        }
+
+        .admin-shell main .flex.justify-between.items-center,
+        .admin-shell main .flex.items-center.justify-between {
+          align-items: flex-start;
+          flex-direction: column;
+          gap: 0.75rem;
+        }
+
+        .admin-shell main .flex.gap-2,
+        .admin-shell main .flex.gap-3 {
+          flex-wrap: wrap;
+        }
+
+        .admin-shell main input[type="file"],
+        .admin-shell main select,
+        .admin-shell main input,
+        .admin-shell main textarea {
+          max-width: 100%;
+        }
+
+        .admin-shell main .container,
+        .admin-shell main .min-h-screen {
+          min-height: auto;
+          padding-left: 0;
+          padding-right: 0;
+          background: transparent;
+        }
+      }
+    </style>
   </head>
-  <body class="h-full font-sans antialiased text-gray-200 bg-gray-950 flex">
+  <body class="admin-shell h-full font-sans antialiased text-gray-200 bg-gray-950 flex">
+    <% admin_nav_links = [
+      ["Dashboard", "/admin/dashboard"],
+      ["Users", "/admin/users"],
+      ["Records Console", "/admin/records"],
+      ["Companies", "/admin/companies"],
+      ["Stock Prices", "/admin/stock_prices"],
+      ["Dividends", "/admin/dividends"],
+      ["News CMS", "/admin/news"],
+      ["Education CMS", "/admin/learn"],
+      ["Data Imports", "/admin/data_imports"]
+    ] %>
+
     <!-- Admin Sidebar -->
     <div class="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 bg-gray-900 border-r border-gray-800">
       <div class="flex-1 flex flex-col min-h-0 bg-gray-900">
@@ -23,33 +95,11 @@
         </div>
         <div class="flex-1 flex flex-col overflow-y-auto">
           <nav class="flex-1 px-2 py-4 space-y-1">
-            <a href="/admin/dashboard" class="text-gray-300 hover:bg-gray-800 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors">
-              Dashboard
-            </a>
-            <a href="/admin/users" class="text-gray-300 hover:bg-gray-800 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors">
-              Users
-            </a>
-            <a href="/admin/records" class="text-gray-300 hover:bg-gray-800 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors">
-              Records Console
-            </a>
-            <a href="/admin/companies" class="text-gray-300 hover:bg-gray-800 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors">
-              Companies
-            </a>
-            <a href="/admin/stock_prices" class="text-gray-300 hover:bg-gray-800 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors">
-              Stock Prices
-            </a>
-            <a href="/admin/dividends" class="text-gray-300 hover:bg-gray-800 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors">
-              Dividends
-            </a>
-            <a href="/admin/news" class="text-gray-300 hover:bg-gray-800 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors">
-              News CMS
-            </a>
-            <a href="/admin/learn" class="text-gray-300 hover:bg-gray-800 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors">
-              Education CMS
-            </a>
-            <a href="/admin/data_imports" class="text-gray-300 hover:bg-gray-800 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors">
-              Data Imports
-            </a>
+            <% admin_nav_links.each do |label, path| %>
+              <a href="<%= path %>" class="text-gray-300 hover:bg-gray-800 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors">
+                <%= label %>
+              </a>
+            <% end %>
             <a href="/" class="mt-8 text-navy-400 hover:text-navy-300 group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors">
               &larr; Back to App
             </a>
@@ -60,11 +110,44 @@
 
     <div class="md:pl-64 flex flex-col flex-1 w-full">
       <div class="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-gray-900/90 backdrop-blur-md border-b border-gray-800 shadow-sm">
-        <div class="flex-1 px-4 flex justify-between">
-          <div class="flex-1 flex"></div>
-          <div class="ml-4 flex items-center md:ml-6">
-            <span class="text-sm font-medium text-gray-400 mr-4"><%= current_user.email %></span>
+        <div class="flex-1 px-4 flex items-center justify-between">
+          <details class="group relative md:hidden">
+            <summary class="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-lg border border-gray-700 bg-gray-950 text-white shadow-sm transition hover:border-navy-500 hover:bg-gray-900 [&::-webkit-details-marker]:hidden" aria-label="Open admin menu">
+              <svg class="h-6 w-6 group-open:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16" />
+              </svg>
+              <svg class="hidden h-6 w-6 group-open:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6L6 18" />
+              </svg>
+            </summary>
+
+            <div class="absolute left-0 z-50 mt-3 w-[min(92vw,22rem)] overflow-hidden rounded-xl border border-gray-800 bg-gray-900 shadow-2xl">
+              <div class="flex items-center gap-2 border-b border-gray-800 px-4 py-4">
+                <img src="/icon.png" alt="NoraCapital" class="h-8 w-8 rounded object-cover">
+                <div>
+                  <p class="text-sm font-bold text-white">Admin Console</p>
+                  <p class="max-w-[16rem] truncate text-xs text-gray-400"><%= current_user.email %></p>
+                </div>
+              </div>
+
+              <nav class="grid gap-1 p-2 text-sm font-semibold text-gray-300">
+                <% admin_nav_links.each do |label, path| %>
+                  <a href="<%= path %>" class="rounded-lg px-3 py-2.5 hover:bg-gray-800 hover:text-white">
+                    <%= label %>
+                  </a>
+                <% end %>
+                <a href="/" class="mt-2 rounded-lg px-3 py-2.5 text-navy-300 hover:bg-gray-800 hover:text-navy-200">
+                  &larr; Back to App
+                </a>
+              </nav>
+            </div>
+          </details>
+
+          <div class="flex min-w-0 flex-1 justify-end">
+            <div class="ml-4 flex min-w-0 items-center md:ml-6">
+            <span class="mr-4 hidden truncate text-sm font-medium text-gray-400 sm:inline"><%= current_user.email %></span>
             <%= button_to "Sign out", "/users/sign_out", method: :delete, class: "text-sm text-red-400 font-medium hover:text-red-300 transition-colors" %>
+            </div>
           </div>
         </div>
       </div>

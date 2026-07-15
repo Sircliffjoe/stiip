@@ -1,13 +1,13 @@
-<div class="min-h-screen bg-gray-50">
+<div class="min-h-screen bg-gray-950">
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Header -->
     <div class="mb-8">
       <%= link_to "← Back to Subscription", admin_subscription_path(@subscription), class: "text-navy-600 hover:text-navy-700 font-medium mb-4 inline-block" %>
-      <h1 class="text-3xl font-bold text-gray-900">Edit Subscription</h1>
+      <h1 class="text-3xl font-bold text-white">Edit Subscription</h1>
     </div>
 
     <!-- Edit Form -->
-    <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
+    <div class="bg-gray-900 rounded-lg border border-gray-800 shadow-sm p-6">
       <%= form_with(model: @subscription, local: true, url: admin_subscription_path(@subscription), method: :patch) do |form| %>
         <% if @subscription.errors.any? %>
           <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -23,42 +23,42 @@
         <div class="space-y-6">
           <!-- Status Field -->
           <div>
-            <%= form.label :status, "Status", class: "block text-sm font-medium text-gray-900 mb-2" %>
+            <%= form.label :status, "Status", class: "block text-sm font-medium text-gray-200 mb-2" %>
             <%= form.select :status, 
                 [["Active", "active"], ["Expired", "expired"], ["Cancelled", "cancelled"], ["Suspended", "suspended"]], 
                 {}, 
-                class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-navy-500" %>
-            <p class="text-sm text-gray-600 mt-1">Current: <strong><%= @subscription.status.titleize %></strong></p>
+                class: "w-full px-3 py-2 border border-gray-700 bg-gray-950 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-navy-500" %>
+            <p class="text-sm text-gray-400 mt-1">Current: <strong><%= @subscription.status.titleize %></strong></p>
           </div>
 
           <!-- Plan Field -->
           <div>
-            <%= form.label :plan, "Plan", class: "block text-sm font-medium text-gray-900 mb-2" %>
+            <%= form.label :plan, "Plan", class: "block text-sm font-medium text-gray-200 mb-2" %>
             <%= form.select :plan, 
                 [["Free", "free"], ["Premium", "premium"], ["Business/API", "business_api"]], 
                 {}, 
-                class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-navy-500" %>
-            <p class="text-sm text-gray-600 mt-1">Current: <strong><%= @subscription.plan&.titleize %></strong></p>
+                class: "w-full px-3 py-2 border border-gray-700 bg-gray-950 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-navy-500" %>
+            <p class="text-sm text-gray-400 mt-1">Current: <strong><%= @subscription.plan&.titleize %></strong></p>
           </div>
 
           <!-- Expires At Field -->
           <div>
-            <%= form.label :expires_at, "Expires At", class: "block text-sm font-medium text-gray-900 mb-2" %>
+            <%= form.label :expires_at, "Expires At", class: "block text-sm font-medium text-gray-200 mb-2" %>
             <%= form.datetime_local_field :expires_at, 
-                class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-navy-500" %>
-            <p class="text-sm text-gray-600 mt-1">Current: <strong><%= @subscription.expires_at&.strftime("%b %d, %Y %H:%M") %></strong></p>
+                class: "w-full px-3 py-2 border border-gray-700 bg-gray-950 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-navy-500" %>
+            <p class="text-sm text-gray-400 mt-1">Current: <strong><%= @subscription.expires_at&.strftime("%b %d, %Y %H:%M") %></strong></p>
           </div>
 
           <!-- User Info (Read-only) -->
-          <div class="bg-gray-50 p-4 rounded-lg">
-            <p class="text-sm font-medium text-gray-900">User</p>
-            <p class="text-gray-700 mt-1"><%= @subscription.user.full_name %> (<%= @subscription.user.email %>)</p>
+          <div class="bg-gray-950 p-4 rounded-lg border border-gray-800">
+            <p class="text-sm font-medium text-gray-200">User</p>
+            <p class="text-gray-400 mt-1"><%= @subscription.user.full_name %> (<%= @subscription.user.email %>)</p>
           </div>
 
           <!-- Actions -->
-          <div class="flex gap-3 pt-4 border-t border-gray-200">
+          <div class="flex flex-wrap gap-3 pt-4 border-t border-gray-800">
             <%= form.submit "Update Subscription", class: "px-6 py-2 bg-navy-600 text-white rounded-lg hover:bg-navy-700 font-medium transition-colors" %>
-            <%= link_to "Cancel", admin_subscription_path(@subscription), class: "px-6 py-2 border border-gray-300 text-gray-900 rounded-lg hover:bg-gray-50 font-medium transition-colors" %>
+            <%= link_to "Cancel", admin_subscription_path(@subscription), class: "px-6 py-2 border border-gray-700 text-gray-200 rounded-lg hover:bg-gray-800 font-medium transition-colors" %>
           </div>
         </div>
       <% end %>

@@ -94,6 +94,42 @@ RSpec.describe DataIngestion::SyncCoordinator, type: :service do
         coordinator.sync_dividends
       }.to change { Dividend.count }
     end
+
+    it "persists multiple same-year dividends for the same company and type idempotently" do
+      provider = Class.new(DataIngestion::Providers::BaseProvider) do
+        def fetch_dividends(start_date:, end_date:)
+          [
+            {
+              ticker_symbol: "GTCO",
+              amount: 2.0,
+              qualification_date: Date.new(2026, 3, 24),
+              payment_date: Date.new(2026, 4, 15),
+              year: 2026,
+              interim: false,
+              currency: "NGN"
+            },
+            {
+              ticker_symbol: "GTCO",
+              amount: 3.0,
+              qualification_date: Date.new(2026, 5, 24),
+              payment_date: Date.new(2026, 6, 15),
+              year: 2026,
+              interim: false,
+              currency: "NGN"
+            }
+          ]
+        end
+      end.new
+      coordinator = described_class.new(provider: provider)
+
+      expect {
+        coordinator.sync_dividends
+      }.to change { Dividend.where(company: company, year: 2026, interim: false).count }.by(2)
+
+      expect {
+        coordinator.sync_dividends
+      }.not_to change { Dividend.where(company: company, year: 2026, interim: false).count }
+    end
   end
 
   describe "#sync_news" do

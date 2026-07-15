@@ -331,7 +331,7 @@ module DataIngestion
             status: :announced,
             created_at: Time.current,
             updated_at: Time.current
-          }, unique_by: [:company_id, :year, :interim], on_duplicate: :update)
+          }, unique_by: :index_dividends_on_company_year_type_dates_amount, on_duplicate: :update)
           
           count += 1
         end
