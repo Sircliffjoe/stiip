@@ -7,7 +7,11 @@ class SyncNewsJob < ApplicationJob
     coordinator = DataIngestion::SyncCoordinator.new(provider: provider_name.to_sym)
     result = coordinator.sync_news
 
-    Rails.logger.info "[SyncNewsJob] Completed. #{result[:count] || 0} records synced."
+    if result[:success]
+      Rails.logger.info "[SyncNewsJob] Completed. #{result[:count] || 0} records synced."
+    else
+      Rails.logger.error "[SyncNewsJob] Failed: #{result[:error]}"
+    end
   rescue StandardError => e
     Rails.logger.error "[SyncNewsJob] Failed: #{e.message}"
     raise

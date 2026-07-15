@@ -13,7 +13,7 @@ class NewsArticle < ApplicationRecord
   validates :title, presence: true
   validates :slug, presence: true, uniqueness: true
 
-  before_validation :generate_slug, on: :create
+  before_validation :generate_slug, if: -> { title.present? && slug.blank? }
 
   scope :published, -> { where.not(published_at: nil).where("published_at <= ?", Time.current) }
   scope :featured, -> { where(featured: true) }
@@ -29,6 +29,15 @@ class NewsArticle < ApplicationRecord
   private
 
   def generate_slug
-    self.slug = title.parameterize if title.present? && slug.blank?
+    base_slug = title.parameterize.presence || SecureRandom.hex(8)
+    candidate = base_slug
+    suffix = 2
+
+    while self.class.where(slug: candidate).where.not(id: id).exists?
+      candidate = "#{base_slug}-#{suffix}"
+      suffix += 1
+    end
+
+    self.slug = candidate
   end
 end
