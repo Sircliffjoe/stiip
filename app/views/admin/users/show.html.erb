@@ -1,48 +1,80 @@
-<div class="max-w-4xl mx-auto">
-  <div class="flex justify-between items-center mb-6">
-    <h1 class="text-2xl font-bold text-white">User Details</h1>
-    <div class="flex gap-2">
-      <%= link_to "Back to Directory", admin_users_path, class: "bg-gray-800 border border-gray-700 text-gray-300 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-700 transition" %>
+<div class="mb-6 flex items-center justify-between">
+  <div>
+    <h1 class="text-2xl font-bold text-white"><%= @user.full_name.presence || @user.email %></h1>
+    <p class="text-sm text-gray-400 mt-1"><%= @user.email %></p>
+  </div>
+  <div class="flex gap-3">
+    <% unless @user.confirmed? %>
+      <%= button_to "Confirm User", confirm_admin_user_path(@user), method: :patch, data: { turbo_confirm: "Manually confirm email for #{@user.email}?" }, class: "rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500 shadow-sm cursor-pointer" %>
+    <% end %>
+    <%= link_to "Edit User", edit_admin_user_path(@user), class: "rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-500" %>
+    <%= link_to "Back to Users", admin_users_path, class: "rounded-lg border border-gray-700 px-4 py-2 text-sm font-semibold text-gray-300 hover:bg-gray-800" %>
+  </div>
+</div>
+
+<div class="grid gap-6 md:grid-cols-2">
+  <div class="rounded-xl border border-gray-800 bg-gray-900 p-6 space-y-4">
+    <h2 class="text-lg font-bold text-white border-b border-gray-800 pb-3">User Details</h2>
+    <div class="grid grid-cols-2 gap-4 text-sm">
+      <div>
+        <span class="text-gray-400 block">First Name</span>
+        <span class="text-white font-medium"><%= @user.first_name %></span>
+      </div>
+      <div>
+        <span class="text-gray-400 block">Last Name</span>
+        <span class="text-white font-medium"><%= @user.last_name %></span>
+      </div>
+      <div>
+        <span class="text-gray-400 block">Role</span>
+        <span class="text-white font-medium uppercase"><%= @user.role %></span>
+      </div>
+      <div>
+        <span class="text-gray-400 block">Phone</span>
+        <span class="text-white font-medium"><%= @user.phone.presence || "N/A" %></span>
+      </div>
+      <div>
+        <span class="text-gray-400 block">Email Confirmed</span>
+        <% if @user.confirmed? %>
+          <span class="text-emerald-400 font-medium flex items-center gap-1 mt-0.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            Yes (<%= @user.confirmed_at.strftime('%b %d, %Y') %>)
+          </span>
+        <% else %>
+          <span class="text-amber-400 font-medium flex items-center gap-1 mt-0.5">
+            No (Unconfirmed)
+          </span>
+        <% end %>
+      </div>
+      <div>
+        <span class="text-gray-400 block">Joined</span>
+        <span class="text-white font-medium"><%= @user.created_at.strftime("%b %d, %Y") %></span>
+      </div>
     </div>
   </div>
 
-  <div class="bg-gray-900 border border-gray-800 shadow rounded-lg overflow-hidden">
-    <div class="px-4 py-5 sm:px-6 flex justify-between items-center border-b border-gray-800">
-      <div>
-        <h3 class="text-lg leading-6 font-medium text-white">
-          <%= @user.email %>
-        </h3>
-        <p class="mt-1 max-w-2xl text-sm text-gray-400">
-          Personal details and account status.
-        </p>
+  <div class="rounded-xl border border-gray-800 bg-gray-900 p-6 space-y-4">
+    <h2 class="text-lg font-bold text-white border-b border-gray-800 pb-3">Subscription Status</h2>
+    <% if @user.subscription.present? %>
+      <div class="grid grid-cols-2 gap-4 text-sm">
+        <div>
+          <span class="text-gray-400 block">Plan</span>
+          <span class="text-white font-medium uppercase"><%= @user.subscription.plan %></span>
+        </div>
+        <div>
+          <span class="text-gray-400 block">Status</span>
+          <span class="text-emerald-400 font-medium uppercase"><%= @user.subscription.status %></span>
+        </div>
+        <div>
+          <span class="text-gray-400 block">Started At</span>
+          <span class="text-white font-medium"><%= @user.subscription.starts_at&.strftime("%b %d, %Y") || "N/A" %></span>
+        </div>
+        <div>
+          <span class="text-gray-400 block">Expires At</span>
+          <span class="text-white font-medium"><%= @user.subscription.expires_at&.strftime("%b %d, %Y") || "Never (Lifetime/Active)" %></span>
+        </div>
       </div>
-      <span class="px-3 py-1 rounded-full bg-navy-900/30 text-navy-400 border border-navy-800 text-sm font-medium">
-        User
-      </span>
-    </div>
-    <div class="border-t border-gray-800 px-4 py-5 sm:p-0">
-      <dl class="sm:divide-y sm:divide-gray-800">
-        <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-400">Email Address</dt>
-          <dd class="mt-1 text-sm text-white sm:mt-0 sm:col-span-2"><%= @user.email %></dd>
-        </div>
-        <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-400">Joined on</dt>
-          <dd class="mt-1 text-sm text-white sm:mt-0 sm:col-span-2"><%= @user.created_at.strftime("%B %d, %Y at %I:%M %p") %></dd>
-        </div>
-        <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-400">Last Sign In</dt>
-          <dd class="mt-1 text-sm text-white sm:mt-0 sm:col-span-2">
-            <%= @user.respond_to?(:last_sign_in_at) && @user.last_sign_in_at ? @user.last_sign_in_at.strftime("%B %d, %Y at %I:%M %p") : "Never" %>
-          </dd>
-        </div>
-        <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-400">Sign In Count</dt>
-          <dd class="mt-1 text-sm text-white sm:mt-0 sm:col-span-2">
-            <%= @user.respond_to?(:sign_in_count) ? @user.sign_in_count : "N/A" %>
-          </dd>
-        </div>
-      </dl>
-    </div>
+    <% else %>
+      <p class="text-sm text-gray-400">No active subscription found. User defaults to Free plan.</p>
+    <% end %>
   </div>
 </div>

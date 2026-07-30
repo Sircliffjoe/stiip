@@ -7,26 +7,42 @@
     <%= link_to "New Lesson", new_admin_educational_content_path, class: "rounded-lg bg-navy-600 px-4 py-2 text-sm font-semibold text-white hover:bg-navy-500" %>
   </div>
 
-  <div class="overflow-hidden rounded-lg border border-gray-800 bg-gray-900">
+  <div class="overflow-x-auto rounded-xl border border-gray-800 bg-gray-900 shadow">
     <% if @contents.any? %>
       <table class="min-w-full divide-y divide-gray-800">
-        <thead class="bg-gray-950/60">
+        <thead class="bg-gray-950">
           <tr>
-            <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-400">Title</th>
-            <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-400">Category</th>
-            <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-400">Level</th>
-            <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-400">Actions</th>
+            <th class="px-4 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">Title</th>
+            <th class="px-4 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">Category</th>
+            <th class="px-4 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">Level</th>
+            <th class="px-4 py-3.5 text-right text-xs font-semibold uppercase tracking-wider text-gray-400">Actions</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-800">
           <% @contents.each do |content| %>
-            <tr>
-              <td class="px-4 py-4 font-medium text-white"><%= content.title %></td>
+            <tr class="hover:bg-gray-800/50 transition-colors">
+              <td class="px-4 py-4">
+                <div class="flex items-center gap-3">
+                  <% if content.image.attached? %>
+                    <img src="<%= rails_blob_path(content.image, only_path: true) %>" alt="<%= content.title %>" class="h-10 w-14 object-cover rounded border border-gray-800">
+                  <% end %>
+                  <span class="font-medium text-white"><%= content.title %></span>
+                </div>
+              </td>
               <td class="px-4 py-4 text-sm text-gray-300"><%= content.category %></td>
               <td class="px-4 py-4 text-sm text-gray-300"><%= content.difficulty_level.humanize %></td>
               <td class="px-4 py-4 text-right text-sm">
-                <%= link_to "View", admin_educational_content_path(content), class: "font-medium text-navy-300 hover:text-navy-200" %>
-                <%= link_to "Edit", edit_admin_educational_content_path(content), class: "ml-3 font-medium text-gray-300 hover:text-white" %>
+                <div class="inline-flex items-center justify-end gap-1.5">
+                  <%= link_to admin_educational_content_path(content), title: "View Lesson", class: "p-1.5 rounded-lg bg-gray-800 text-navy-400 hover:bg-navy-900/50 hover:text-navy-300 border border-gray-700 transition-colors" do %>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                  <% end %>
+                  <%= link_to edit_admin_educational_content_path(content), title: "Edit Lesson", class: "p-1.5 rounded-lg bg-gray-800 text-amber-400 hover:bg-amber-900/30 hover:text-amber-300 border border-gray-700 transition-colors" do %>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                  <% end %>
+                  <%= button_to admin_educational_content_path(content), method: :delete, title: "Delete Lesson", data: { turbo_confirm: "Delete this lesson?" }, class: "p-1.5 rounded-lg bg-gray-800 text-red-400 hover:bg-red-900/30 hover:text-red-300 border border-gray-700 transition-colors cursor-pointer" do %>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                  <% end %>
+                </div>
               </td>
             </tr>
           <% end %>

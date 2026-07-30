@@ -43,10 +43,10 @@ class Admin::EducationalContentsController < Admin::ApplicationController
   private
 
   def set_content
-    @content = EducationalContent.find(params[:id])
+    @content = EducationalContent.find_by(id: params[:id]) || EducationalContent.find_by!(slug: params[:id])
   end
 
   def content_params
-    params.require(:educational_content).permit(:title, :summary, :body, :excerpt, :category, :difficulty_level, :featured, :published_at)
+    params.require(:educational_content).permit(:title, :summary, :body, :excerpt, :category, :difficulty_level, :featured, :published_at, :image)
   end
 end

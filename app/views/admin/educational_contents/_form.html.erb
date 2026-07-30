@@ -40,6 +40,16 @@
     <%= f.text_area :excerpt, rows: 3, placeholder: "Short excerpt or preview", class: "mt-1 w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white focus:border-navy-500 focus:ring-navy-500" %>
   </div>
 
+  <div>
+    <%= f.label :image, "Featured / Cover Image (Upload)", class: "block text-sm font-medium text-gray-300" %>
+    <div class="mt-1 flex items-center gap-3">
+      <% if content.image.attached? %>
+        <img src="<%= rails_blob_path(content.image, only_path: true) %>" alt="Cover image preview" class="h-16 w-24 object-cover rounded-lg border border-gray-700">
+      <% end %>
+      <%= f.file_field :image, accept: "image/*", class: "block w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-gray-800 file:text-white hover:file:bg-gray-700 border border-gray-700 rounded-md bg-gray-950" %>
+    </div>
+  </div>
+
   <div class="grid gap-4 md:grid-cols-2">
     <div>
       <%= f.label :published_at, class: "block text-sm font-medium text-gray-300" %>

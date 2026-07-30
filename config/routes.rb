@@ -40,7 +40,11 @@ Rails.application.routes.draw do
     patch 'records/:model/:id', to: 'records#update'
     put 'records/:model/:id', to: 'records#update'
     delete 'records/:model/:id', to: 'records#destroy'
-    resources :users
+    resources :users do
+      member do
+        patch :confirm
+      end
+    end
     resources :companies
     resources :subscriptions
     resources :stock_prices do

@@ -9,6 +9,7 @@ class NewsArticle < ApplicationRecord
   has_many :companies, through: :company_news
   has_many :taggings, as: :taggable, dependent: :destroy
   has_many :tags, through: :taggings
+  has_one_attached :image
 
   validates :title, presence: true
   validates :slug, presence: true, uniqueness: true

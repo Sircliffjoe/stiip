@@ -13,6 +13,33 @@
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
     <style>
+      .admin-shell input[type="text"],
+      .admin-shell input[type="email"],
+      .admin-shell input[type="password"],
+      .admin-shell input[type="number"],
+      .admin-shell input[type="url"],
+      .admin-shell input[type="datetime-local"],
+      .admin-shell input[type="date"],
+      .admin-shell select,
+      .admin-shell textarea {
+        min-height: 2.625rem;
+        padding-top: 0.625rem;
+        padding-bottom: 0.625rem;
+        padding-left: 0.875rem;
+        padding-right: 0.875rem;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+      }
+
+      .admin-shell input[type="file"] {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+        border-radius: 0.5rem;
+      }
+
       @media (max-width: 767px) {
         .admin-shell main {
           overflow-x: hidden;

@@ -26,8 +26,14 @@ class Company < ApplicationRecord
     current_price || stock_prices.order(date: :desc).first&.close
   end
 
+  has_one_attached :logo
+
   def logo_source(size: 128)
-    normalized_logo_url.presence || website_favicon_url(size: size)
+    if logo.attached?
+      Rails.application.routes.url_helpers.rails_blob_path(logo, only_path: true)
+    else
+      normalized_logo_url.presence || website_favicon_url(size: size)
+    end
   end
 
   def pe_ratio_explanation

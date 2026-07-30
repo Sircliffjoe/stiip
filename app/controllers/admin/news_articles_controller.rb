@@ -46,11 +46,11 @@ class Admin::NewsArticlesController < Admin::ApplicationController
   private
 
   def set_article
-    @article = NewsArticle.find(params[:id])
+    @article = NewsArticle.find_by(id: params[:id]) || NewsArticle.find_by!(slug: params[:id])
   end
 
   def article_params
-    params.require(:news_article).permit(:title, :slug, :summary, :source, :source_url, :published_at, :featured, :category)
+    params.require(:news_article).permit(:title, :slug, :summary, :source, :source_url, :published_at, :featured, :category, :image)
   end
 
   def sync_companies

@@ -9,17 +9,27 @@ class BrevoService
   end
 
   def send_email(to:, subject:, html_content:, text_content:, sender:, attachments: [], cc: [], bcc: [], reply_to: nil)
-    email = Brevo::SendSmtpEmail.new(
+    email_params = {
       sender: build_sender(sender),
       to: build_recipients(to),
-      cc: build_recipients(cc),
-      bcc: build_recipients(bcc),
-      reply_to: build_reply_to(reply_to),
       subject: subject.to_s,
       html_content: html_content.to_s,
-      text_content: text_content.to_s,
-      attachment: build_attachments(attachments)
-    )
+      text_content: text_content.to_s
+    }
+
+    cc_list = build_recipients(cc)
+    email_params[:cc] = cc_list if cc_list.present?
+
+    bcc_list = build_recipients(bcc)
+    email_params[:bcc] = bcc_list if bcc_list.present?
+
+    reply_to_obj = build_reply_to(reply_to)
+    email_params[:reply_to] = reply_to_obj if reply_to_obj.present?
+
+    att_list = build_attachments(attachments)
+    email_params[:attachment] = att_list if att_list.present?
+
+    email = Brevo::SendSmtpEmail.new(**email_params)
 
     @api.send_transac_email(email)
   end
@@ -29,20 +39,28 @@ class BrevoService
   def build_sender(sender)
     sender ||= {}
 
-    Brevo::SendSmtpEmailSender.new(
-      email: sender[:email] || sender["email"] || ENV.fetch("BREVO_SENDER_EMAIL", DEFAULT_SENDER_EMAIL),
-      name: sender[:name] || sender["name"] || ENV.fetch("BREVO_SENDER_NAME", DEFAULT_SENDER_NAME)
-    )
+    email = sender[:email].presence || sender["email"].presence || ENV["BREVO_SENDER_EMAIL"].presence || DEFAULT_SENDER_EMAIL
+    name  = sender[:name].presence || sender["name"].presence || ENV["BREVO_SENDER_NAME"].presence || DEFAULT_SENDER_NAME
+
+    Brevo::SendSmtpEmailSender.new(email: email, name: name)
   end
 
   def build_recipients(recipients)
-    Array(recipients).filter_map do |recipient|
+    list = Array(recipients).filter_map do |recipient|
+      next if recipient.blank?
+
       email = value_from(recipient, :email)
       email ||= recipient.to_s
       next if email.blank?
 
-      Brevo::SendSmtpEmailTo.new(email: email, name: value_from(recipient, :name))
+      name = value_from(recipient, :name)
+      opts = { email: email }
+      opts[:name] = name if name.present?
+
+      Brevo::SendSmtpEmailTo.new(**opts)
     end
+
+    list.presence
   end
 
   def build_reply_to(reply_to)
@@ -50,18 +68,27 @@ class BrevoService
 
     email = value_from(reply_to, :email)
     email ||= reply_to.to_s
-    name = value_from(reply_to, :name)
+    return nil if email.blank?
 
-    Brevo::SendSmtpEmailReplyTo.new(email: email, name: name)
+    name = value_from(reply_to, :name)
+    opts = { email: email }
+    opts[:name] = name if name.present?
+
+    Brevo::SendSmtpEmailReplyTo.new(**opts)
   end
 
   def build_attachments(attachments)
-    Array(attachments).map do |attachment|
-      Brevo::SendSmtpEmailAttachment.new(
-        name: attachment[:name] || attachment["name"],
-        content: attachment[:content] || attachment["content"]
-      )
+    list = Array(attachments).filter_map do |attachment|
+      next if attachment.blank?
+
+      name = attachment[:name] || attachment["name"]
+      content = attachment[:content] || attachment["content"]
+      next if name.blank? || content.blank?
+
+      Brevo::SendSmtpEmailAttachment.new(name: name, content: content)
     end
+
+    list.presence
   end
 
   def value_from(record, key)

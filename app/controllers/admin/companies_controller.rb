@@ -58,7 +58,7 @@ class Admin::CompaniesController < Admin::ApplicationController
       :name, :ticker_symbol, :sector_id, :description,
       :market_cap, :pe_ratio, :current_price, :opening_price, :closing_price,
       :high_52_week, :low_52_week, :dividend_yield, :shares_outstanding,
-      :website, :logo_url, :investor_relations_url, :founded_year, :listed
+      :website, :logo_url, :logo, :investor_relations_url, :founded_year, :listed
     )
   end
 

@@ -1,23 +1,107 @@
-<h1 class="text-2xl font-bold text-white mb-6">Users Directory</h1>
-<div class="bg-gray-900 border border-gray-800 shadow overflow-hidden sm:rounded-lg border border-gray-800">
-  <table class="min-w-full divide-y divide-gray-800">
-    <thead class="bg-gray-800">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+  <div>
+    <h1 class="text-2xl font-bold text-white">Users Directory</h1>
+    <p class="text-sm text-gray-400 mt-1">Manage user accounts, roles, and subscription access.</p>
+  </div>
+  <%= link_to "Add New User", new_admin_user_path, class: "inline-flex items-center justify-center rounded-lg bg-navy-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-navy-500 shadow-sm transition-colors" %>
+</div>
+
+<div class="mb-6 flex flex-wrap gap-3 bg-gray-900 border border-gray-800 p-4 rounded-xl">
+  <%= form_with url: admin_users_path, method: :get, class: "flex flex-wrap gap-3 w-full" do |f| %>
+    <div class="flex-1 min-w-[200px]">
+      <%= f.text_field :query, value: params[:query], placeholder: "Search by name or email...", class: "w-full rounded-lg border border-gray-700 bg-gray-950 px-3.5 py-2.5 text-sm text-white focus:border-navy-500 focus:ring-navy-500" %>
+    </div>
+    <div class="w-44">
+      <%= f.select :role, User.roles.keys.map { |r| [r.humanize, r] }, { include_blank: "All Roles", selected: params[:role] }, class: "w-full rounded-lg border border-gray-700 bg-gray-950 px-3.5 py-2.5 text-sm text-white focus:border-navy-500 focus:ring-navy-500" %>
+    </div>
+    <div class="flex gap-2">
+      <%= f.submit "Filter", class: "rounded-lg bg-gray-800 px-4 py-2.5 text-sm font-semibold text-gray-200 hover:bg-gray-700 border border-gray-700" %>
+      <% if params[:query].present? || params[:role].present? %>
+        <%= link_to "Reset", admin_users_path, class: "rounded-lg border border-gray-700 px-4 py-2.5 text-sm font-semibold text-gray-400 hover:bg-gray-800 hover:text-white" %>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
+<div class="overflow-x-auto rounded-xl border border-gray-800 bg-gray-900 shadow">
+  <table class="min-w-[56rem] w-full divide-y divide-gray-800 text-left">
+    <thead class="bg-gray-950">
       <tr>
-        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Name</th>
-        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Email</th>
-        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Role</th>
-        <th class="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
+        <th class="px-4 py-3.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Name</th>
+        <th class="px-4 py-3.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Email</th>
+        <th class="px-4 py-3.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Role</th>
+        <th class="px-4 py-3.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Plan</th>
+        <th class="px-4 py-3.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Status</th>
+        <th class="px-4 py-3.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Joined</th>
+        <th class="px-4 py-3.5 text-right text-xs font-semibold text-gray-400 uppercase tracking-wider">Actions</th>
       </tr>
     </thead>
-    <tbody class="bg-gray-900 border border-gray-800 divide-y divide-gray-800">
+    <tbody class="divide-y divide-gray-800 bg-gray-900">
       <% @users.each do |user| %>
-        <tr class="hover:bg-gray-800">
-          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">Admin User</td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400"><%= user.email %></td>
-          <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-navy-900/30 text-navy-400 border border-navy-800">Admin</span></td>
-          <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-            <%= link_to "View", admin_user_path(user), class: "text-navy-400 hover:text-navy-300" %>
+        <tr class="hover:bg-gray-800/50 transition-colors">
+          <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-white">
+            <%= user.full_name.presence || "N/A" %>
           </td>
+          <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-300">
+            <%= user.email %>
+          </td>
+          <td class="px-4 py-4 whitespace-nowrap">
+            <% role_colors = {
+              "admin" => "bg-red-500/10 text-red-400 border-red-500/30",
+              "analyst" => "bg-purple-500/10 text-purple-400 border-purple-500/30",
+              "business_api" => "bg-blue-500/10 text-blue-400 border-blue-500/30",
+              "premium" => "bg-amber-500/10 text-amber-400 border-amber-500/30",
+              "free" => "bg-gray-800 text-gray-400 border-gray-700"
+            } %>
+            <span class="px-2.5 py-1 inline-flex text-xs leading-4 font-semibold rounded-full border <%= role_colors[user.role] || role_colors['free'] %>">
+              <%= user.role.humanize %>
+            </span>
+          </td>
+          <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-300">
+            <span class="uppercase text-xs font-semibold px-2 py-0.5 rounded bg-gray-800 border border-gray-700">
+              <%= user.subscription&.plan&.humanize || "Free" %>
+            </span>
+          </td>
+          <td class="px-4 py-4 whitespace-nowrap text-sm">
+            <% if user.confirmed? %>
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                Confirmed
+              </span>
+            <% else %>
+              <span class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                Unconfirmed
+              </span>
+            <% end %>
+          </td>
+          <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-400">
+            <%= user.created_at.strftime("%b %d, %Y") %>
+          </td>
+          <td class="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
+            <div class="inline-flex items-center justify-end gap-1.5">
+              <% unless user.confirmed? %>
+                <%= button_to confirm_admin_user_path(user), method: :patch, data: { turbo_confirm: "Manually confirm email for #{user.email}?" }, title: "Confirm User Email", class: "p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/30 transition-colors cursor-pointer" do %>
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <% end %>
+              <% end %>
+              <%= link_to admin_user_path(user), title: "View Details", class: "p-1.5 rounded-lg bg-gray-800 text-navy-400 hover:bg-navy-900/50 hover:text-navy-300 border border-gray-700 transition-colors" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+              <% end %>
+              <%= link_to edit_admin_user_path(user), title: "Edit User", class: "p-1.5 rounded-lg bg-gray-800 text-amber-400 hover:bg-amber-900/30 hover:text-amber-300 border border-gray-700 transition-colors" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+              <% end %>
+              <% unless user == current_user %>
+                <%= button_to admin_user_path(user), method: :delete, data: { turbo_confirm: "Are you sure you want to delete user #{user.email}?" }, title: "Delete User", class: "p-1.5 rounded-lg bg-gray-800 text-red-400 hover:bg-red-900/30 hover:text-red-300 border border-gray-700 transition-colors cursor-pointer" do %>
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                <% end %>
+              <% end %>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+      <% if @users.empty? %>
+        <tr>
+          <td colspan="7" class="px-6 py-8 text-center text-sm text-gray-400">No users found.</td>
         </tr>
       <% end %>
     </tbody>

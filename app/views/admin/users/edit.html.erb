@@ -1,0 +1,9 @@
+<div class="mb-6 flex items-center justify-between">
+  <div>
+    <h1 class="text-2xl font-bold text-white">Edit User</h1>
+    <p class="text-sm text-gray-400 mt-1">Update details for <%= @user.email %></p>
+  </div>
+  <%= link_to "&larr; Back to Users".html_safe, admin_users_path, class: "text-sm text-gray-400 hover:text-white" %>
+</div>
+
+<%= render "form", user: @user %>

@@ -8,6 +8,12 @@
     <%= link_to "Edit", edit_admin_educational_content_path(@content), class: "rounded-lg bg-navy-600 px-4 py-2 text-sm font-semibold text-white hover:bg-navy-500" %>
   </div>
 
+  <% if @content.image.attached? %>
+    <div class="overflow-hidden rounded-xl border border-gray-800">
+      <img src="<%= rails_blob_path(@content.image, only_path: true) %>" alt="<%= @content.title %>" class="w-full max-h-96 object-cover">
+    </div>
+  <% end %>
+
   <div class="rounded-lg border border-gray-800 bg-gray-900 p-6">
     <h3 class="text-sm font-semibold text-gray-300 mb-2">Summary</h3>
     <p class="leading-7 text-gray-300"><%= @content.summary %></p>

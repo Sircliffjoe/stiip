@@ -24,8 +24,8 @@ class BrevoDelivery
     raise "No email recipients provided" if recipients.empty?
 
     sender = {
-      'email' => (mail[:from]&.addresses&.first || ENV.fetch("BREVO_SENDER_EMAIL", BrevoService::DEFAULT_SENDER_EMAIL)),
-      'name'  => (mail[:from]&.display_names&.first || ENV.fetch("BREVO_SENDER_NAME", BrevoService::DEFAULT_SENDER_NAME))
+      'email' => (mail[:from]&.addresses&.first || mail.from&.first || ENV["BREVO_SENDER_EMAIL"] || BrevoService::DEFAULT_SENDER_EMAIL),
+      'name'  => (mail[:from]&.display_names&.first || ENV["BREVO_SENDER_NAME"] || BrevoService::DEFAULT_SENDER_NAME)
     }
 
     attachments = mail.attachments.present? ? mail.attachments.map { |a|

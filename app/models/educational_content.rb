@@ -7,6 +7,7 @@ class EducationalContent < ApplicationRecord
   belongs_to :author, class_name: 'User', optional: true
   has_many :taggings, as: :taggable, dependent: :destroy
   has_many :tags, through: :taggings
+  has_one_attached :image
 
   enum :difficulty_level, { beginner: 0, intermediate: 1, advanced: 2 }
 

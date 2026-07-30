@@ -15,9 +15,18 @@ class User < ApplicationRecord
   has_many :authored_educational_contents, class_name: 'EducationalContent', foreign_key: 'author_id'
   has_many :audit_logs
 
+  before_validation :set_default_role, on: :create
   after_create :ensure_free_subscription!
 
   validates :first_name, :last_name, presence: true
+
+  private
+
+  def set_default_role
+    self.role ||= :free
+  end
+
+  public
 
   def full_name
     "#{first_name} #{last_name}"

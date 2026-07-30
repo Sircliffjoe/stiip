@@ -3,20 +3,20 @@
   <%= link_to "Add Company", new_admin_company_path, class: "bg-navy-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-navy-700 transition" %>
 </div>
 
-<div class="bg-gray-900 border border-gray-800 shadow overflow-hidden sm:rounded-lg border border-gray-800">
+<div class="overflow-x-auto rounded-xl border border-gray-800 bg-gray-900 shadow">
   <table class="min-w-full divide-y divide-gray-800">
-    <thead class="bg-gray-800">
+    <thead class="bg-gray-950">
       <tr>
-        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Company</th>
-        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Sector</th>
-        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Price</th>
-        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Market Cap</th>
-        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
+        <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Company</th>
+        <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Sector</th>
+        <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Price</th>
+        <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Market Cap</th>
+        <th scope="col" class="px-6 py-3.5 text-right text-xs font-semibold text-gray-400 uppercase tracking-wider">Actions</th>
       </tr>
     </thead>
-    <tbody class="bg-gray-900 border border-gray-800 divide-y divide-gray-800">
+    <tbody class="divide-y divide-gray-800 bg-gray-900">
       <% @companies.each do |company| %>
-        <tr>
+        <tr class="hover:bg-gray-800/50 transition-colors">
           <td class="px-6 py-4 whitespace-nowrap">
             <div class="flex items-center">
               <%= render "companies/logo", company: company, size_class: "h-10 w-10", text_class: "text-sm", rounded_class: "rounded-md" %>
@@ -36,9 +36,17 @@
             <%= number_to_human(company.market_cap, units: { billion: "B", million: "M" }, format: "%n%u") || "N/A" %>
           </td>
           <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-            <%= link_to "View", admin_company_path(company), class: "text-navy-400 hover:text-navy-300 mr-3" %>
-            <%= link_to "Edit", edit_admin_company_path(company), class: "text-navy-600 hover:text-navy-300 mr-3" %>
-            <%= button_to "Delete", admin_company_path(company), method: :delete, class: "text-red-600 hover:text-red-900 inline-block", data: { turbo_confirm: "Are you sure?" } %>
+            <div class="inline-flex items-center justify-end gap-1.5">
+              <%= link_to admin_company_path(company), title: "View Details", class: "p-1.5 rounded-lg bg-gray-800 text-navy-400 hover:bg-navy-900/50 hover:text-navy-300 border border-gray-700 transition-colors" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+              <% end %>
+              <%= link_to edit_admin_company_path(company), title: "Edit Company", class: "p-1.5 rounded-lg bg-gray-800 text-amber-400 hover:bg-amber-900/30 hover:text-amber-300 border border-gray-700 transition-colors" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+              <% end %>
+              <%= button_to admin_company_path(company), method: :delete, title: "Delete Company", data: { turbo_confirm: "Are you sure you want to delete #{company.name}?" }, class: "p-1.5 rounded-lg bg-gray-800 text-red-400 hover:bg-red-900/30 hover:text-red-300 border border-gray-700 transition-colors cursor-pointer" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              <% end %>
+            </div>
           </td>
         </tr>
       <% end %>
