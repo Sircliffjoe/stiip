@@ -13,8 +13,8 @@ class BrevoService
       sender: build_sender(sender),
       to: build_recipients(to),
       subject: subject.to_s,
-      html_content: html_content.to_s,
-      text_content: text_content.to_s
+      htmlContent: html_content.to_s,
+      textContent: text_content.to_s
     }
 
     cc_list = build_recipients(cc)
@@ -24,7 +24,7 @@ class BrevoService
     email_params[:bcc] = bcc_list if bcc_list.present?
 
     reply_to_obj = build_reply_to(reply_to)
-    email_params[:reply_to] = reply_to_obj if reply_to_obj.present?
+    email_params[:replyTo] = reply_to_obj if reply_to_obj.present?
 
     att_list = build_attachments(attachments)
     email_params[:attachment] = att_list if att_list.present?

@@ -56,6 +56,9 @@ class BrevoDelivery
 
   rescue => e
     Rails.logger.error "[BrevoDelivery] ERROR: #{e.class} - #{e.message}"
+    if e.respond_to?(:response_body) && e.response_body.present?
+      Rails.logger.error "[BrevoDelivery] Response Body: #{e.response_body}"
+    end
     Rails.logger.error e.backtrace.first(5).join("\n")
     raise
   end

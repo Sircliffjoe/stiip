@@ -20,9 +20,11 @@ RSpec.describe BrevoService do
       expect(hash).not_to have_key(:cc)
       expect(hash).not_to have_key(:bcc)
       expect(hash).not_to have_key(:attachment)
-      expect(hash).not_to have_key(:reply_to)
+      expect(hash).not_to have_key(:replyTo)
       expect(hash[:to]).to eq([{ email: "user@example.com" }])
       expect(hash[:subject]).to eq("Welcome")
+      expect(hash[:htmlContent]).to eq("<p>Hello</p>")
+      expect(hash[:textContent]).to eq("Hello")
     end
 
     subject.send_email(
